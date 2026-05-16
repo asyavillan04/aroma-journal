@@ -1,5 +1,6 @@
 # Aroma Journal
 This is a pet project in progress. App for tracking perfumery ingridients and organizing formulas. 
+For Web, Windows and Android.
 
 Stack: HTML, CSS, JS (frontend) + C# (backend)
 
@@ -14,3 +15,5 @@ Users will be able to:
 - Build olfactory pyramid of the formulas
 - Calculate weight of ingridients for any amount of perfume they need
 - See warnings about IRFA restrictions
+
+Planned languages: English, Spanish, Russian, Esperanto 
