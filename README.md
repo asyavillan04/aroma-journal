@@ -16,4 +16,4 @@ Users will be able to:
 - Calculate weight of ingridients for any amount of perfume they need
 - See warnings about IRFA restrictions
 
-Planned languages: English, Spanish, Russian, Esperanto 
+Planned interface languages: English, Spanish, Russian, Esperanto 
