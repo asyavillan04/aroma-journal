@@ -1,0 +1,36 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-backround);
+}
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
+h1 {
+    font-family: 'Fleur De Leah', sans-serif;
+    font-size: 50px;
+    color: var(--color-header);
+    margin-top: 0;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+footer {
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    margin-top: auto
+}

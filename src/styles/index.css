@@ -1,0 +1,6 @@
+@import './node_modules/@a1rth/css-normalize/normalize.css';
+@import 'globals.css';
+@import 'components/footer-buttons.css';
+@import 'fonts.css';
+@import 'variables.css';
+@import 'components/blocks.css';
