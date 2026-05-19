@@ -3,6 +3,7 @@
     background-color: antiquewhite;
     border-radius: 5px;
     padding: 10px;
+    
 
     width: 60%;
     height: auto;
@@ -12,4 +13,11 @@
     background-color: var(--color-block);
 
     color: var(--color-text);
+}
+
+.journal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 80%;
 }

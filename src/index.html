@@ -11,13 +11,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fleur+De+Leah&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/index.css">
+
+    <script src="js/index.js" type="module"></script> 
 </head>
 <body>
     <h1>Aroma Journal</h1>
 
-    <main>
+    <main id="main-content">
         
-    <div class="block maturated-soon">
+    <!-- <div class="block maturated-soon">
         <span>Созревания: </span> Нет ближайших созреваний
     </div>
 
@@ -27,17 +29,17 @@
 
       <div class="block ingridients-palette">
         <span>Парфюмерная палитра:</span> Пусто
-    </div>
+    </div> !-->
 
     </main>
 
     <footer>
         <div class="footer-content">
-            <button class="footer-button" aria-label="formulas">📝</button>
-            <button class="footer-button" aria-label="ingridients">🌿</button>
-            <button class="footer-middle" aria-label="home">🏠</button>
-            <button class="footer-button" aria-label="maturation">🕔</button>
-            <button class="footer-button" aria-label="settings">⚙️</button>
+            <button class="footer-button" data-hash="#formulas" aria-label="formulas">📝</button>
+            <button class="footer-button" data-hash="#ingredients" aria-label="ingridients">🌿</button>
+            <button class="footer-middle" data-hash="#home" aria-label="home">🏠</button>
+            <button class="footer-button" data-hash="#maceration" aria-label="maceration">🕔</button>
+            <button class="footer-button" data-hash="#settings" aria-label="settings">⚙️</button>
         </div>
     </footer>
 </body>
