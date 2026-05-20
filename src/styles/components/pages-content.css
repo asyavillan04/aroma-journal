@@ -1,0 +1,7 @@
+.add-button {
+    display: inline;
+    background-color: var(--color-block);
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 20px;
+}

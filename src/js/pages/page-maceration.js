@@ -4,5 +4,7 @@ export function renderMaceration(container) {
       <h2>Maceration</h2>
       <p>Track maturation of your blends.</p>
     </div>
+
+    <button class="add-button ingridient-add-button">Новая мацерация</button>
   `;
 }
