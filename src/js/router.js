@@ -3,6 +3,7 @@ import { renderIngredients } from './pages/page-ingridients.js';
 import { renderFormulas } from './pages/page-formulas.js';
 import { renderMaceration } from './pages/page-maceration.js';
 import { renderSettings } from './pages/page-settings.js';
+import { renderIngredientPicker } from './pages/ingredient-picker.js';
 
 const container = document.getElementById('main-content');
 
@@ -11,7 +12,9 @@ const routes = {
   '#ingredients': renderIngredients,
   '#formulas': renderFormulas,
   '#maceration': renderMaceration,
-  '#settings': renderSettings
+  '#settings': renderSettings,
+
+  '#ingredient-picker': renderIngredientPicker,
 };
 
 function handleRoute() {
