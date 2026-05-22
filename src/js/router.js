@@ -1,5 +1,5 @@
 import { renderHome } from './pages/page-home.js';
-import { renderIngredients } from './pages/page-ingridients.js';
+import { renderIngredients } from './pages/page-ingredients.js';
 import { renderFormulas } from './pages/page-formulas.js';
 import { renderMaceration } from './pages/page-maceration.js';
 import { renderSettings } from './pages/page-settings.js';

@@ -1,4 +1,4 @@
-import { getIngredients, addIngredient } from '../data/list-ingridients.js';
+import { getIngredients, addIngredient } from '../data/list-ingredients.js';
 
 export function renderIngredientPicker(container) {
   container.innerHTML = `
