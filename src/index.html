@@ -18,21 +18,45 @@
     <h1>Aroma Journal</h1>
 
     <main id="main-content">
-        
-    <!-- <div class="block maturated-soon">
-        <span>Созревания: </span> Нет ближайших созреваний
-    </div>
 
-    <div class="block ingridients-run-out">
-        <span>Заканчивается:</span>Нет ингридиентов, которые заканчиваются
-    </div>
-
-      <div class="block ingridients-palette">
-        <span>Парфюмерная палитра:</span> Пусто
-    </div> !-->
+    </template>
 
     </main>
 
+        <template id="ingredient-modal-template">
+        <div class="journal-content"> 
+        
+            <div class="element"> <label for="name">Название: </label> <input type="text" placeholder="Введите название"> </div>
+
+            <div class="element">     
+                <label for="amount">Количество: </label> <input type="number" placeholder="Введите количество">
+                <select name="measure" id="measure">
+                    <option value="mg">мг</option>
+                    <option value="ml">мл</option>
+                </select>
+            </div>
+
+            <div class="element"> <label for="origin">Происхождение: </label> <input type="text"> </div>
+
+            <div class="element"> 
+                <label for="type">Тип: </label> 
+                <select name="type" id="type">
+                    <option type="essentialOil">Эфирное масло</option>
+                    <option type="absolute">Абсолют</option>
+                    <option type="other">Другое</option>
+                </select>
+            </div>
+
+            <div class="element"> <label for="shelfLife">Срок годности: </label> </div>
+
+            <div class="element"> <label for="aromaProfile">Ароматический профиль: </label> <input type="textarea" placeholder="Описание аромата компонента"> </div>
+
+            <div class="element"> <label for="comments">Комментарии: </label> <input type="textarea" placeholder="Ваши комментарии о компоненте"></div>
+
+        </div>
+
+        </template>
+</body>
     <footer>
         <div class="footer-content">
             <button class="footer-button" data-hash="#formulas" aria-label="formulas"> <img src="assets/icon-formulas.svg"> </button>
