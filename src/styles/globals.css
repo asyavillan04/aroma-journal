@@ -32,6 +32,9 @@ main{
 
 .page {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 footer {
@@ -41,7 +44,6 @@ footer {
     margin-top: auto
 }
 
-/* Обнуление стилей кнопок для Aroma Journal */
 
 button,
 input[type="button"],

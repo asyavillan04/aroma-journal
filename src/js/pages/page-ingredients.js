@@ -5,21 +5,25 @@ export function renderIngredients(container) {
   const currentLang = document.documentElement.lang || 'en';
 
   container.innerHTML = `
-    <div class="ingredients-page">
-      <h2>Ingredients</h2>
-      <p>List of all your ingredients will be here.</p>
+    <div class="ingredients-page journal-content">
+      
+      <div class="ing-head page-head">
+      <h2>Палитра</h2>
 
       <button class="add-button ingredient-add-button" id="open-picker-btn">
         Новый ингредиент
       </button>
+      </div>
+
+         <p>Здесь будет список ваших ингредиентов</p>
 
       <ul class="ingredients-list">
         ${ingredients.map(ing => `
-          <li class="ingredient-item">
+          <li class="ingredient-item element">
             <span>${ing.name[currentLang] || ing.name.en}</span>
             <span class="ingredient-type">${ing.type}</span>
             <span class="ingredient-quantity">${ing.quantity} ml</span>
-            <button class="ingredient-delete-button" data-id="${ing.id}" title="Удалить ингредиент"> × </button>
+            <button class="ingredient-delete-button delete-button" data-id="${ing.id}" title="Удалить ингредиент"> × </button>
           </li>
         `).join('')}
       </ul>
@@ -48,4 +52,5 @@ document.querySelectorAll('.ingredient-delete-button[data-id]').forEach(btn => {
     }
   });
 });
+
 }

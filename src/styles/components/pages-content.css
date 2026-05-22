@@ -1,5 +1,5 @@
 .add-button {
-    display: inline;
+    height: min-content;
     background-color: var(--color-block);
     border-radius: 10px;
     padding: 5px 10px;
