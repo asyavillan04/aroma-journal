@@ -25,7 +25,7 @@ export function renderIngredients(container) {
             <span>${ing.name[currentLang] || ing.name.en}</span>
             <span class="ingredient-type">${ing.type}</span>
             <span class="ingredient-quantity">${ing.quantity} ml</span>
-            <button class="ingredient-delete-button delete-button" data-id="${ing.id}" title="Удалить ингредиент"> × </button>
+            <button class="ingredient-delete-button delete-button" data-id="${ing.id}" title="Удалить ингредиент">  </button>
           </li>
         `).join('')}
       </ul>

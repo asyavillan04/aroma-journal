@@ -5,28 +5,15 @@
 }
 
 .footer-button {
-    display: flexbox;
+    display: flex;
     width: 50px;
     height: 50px;
     background-color: var(--color-footer-button);
     box-shadow: none;
-    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
 
        &:hover{
         background-color: var(--color-accent);
-    }
-}
-
-
-.footer-middle {
-    display: flexbox;
-    width: 60px;
-    height: 60px;
-    border-radius: 10px;
-    background-color: var(--color-accent);
-    
-
-    &:hover{
-        background-color: var(--color-accent-2);
     }
 }

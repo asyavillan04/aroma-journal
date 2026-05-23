@@ -1,6 +1,6 @@
 .element {
     display: flex;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     padding: 10px;
     
 
@@ -12,6 +12,8 @@
     background-color: var(--color-block);
 
     color: var(--color-text);
+
+    gap: 10px;
 }
 
 .journal-content {

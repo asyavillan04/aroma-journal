@@ -1,7 +1,13 @@
 .add-button {
     height: min-content;
     background-color: var(--color-block);
-    border-radius: 10px;
     padding: 5px 10px;
     font-size: 20px;
+}
+
+.delete-button {
+    width: 27px;
+    height: 27px;
+    background-image: url('../../assets/icon-delete.svg');
+    background-size: cover;
 }
