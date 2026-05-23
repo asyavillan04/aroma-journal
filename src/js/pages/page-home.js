@@ -1,8 +1,8 @@
 export function renderHome(container) {
   container.innerHTML = `
     <div class="home-page page">
-      <h2>Welcome to Aroma Journal</h2>
-      <p>Your personal perfume organiser.</p>
+      <h2>Добро пожаловать в <span> Aroma Journal </span> </h2>
+      <p>Ваш личный органайзер парфюмерии. </p>
 
       <div class="journal-content">
         <div class="element maturated-soon">

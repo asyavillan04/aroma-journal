@@ -8,7 +8,7 @@ const defaultIngredients = [
     botanicalName: 'Citrus bergamia',
     type: 'essential-oil',
     origin: 'Италия',
-    quantity: 50,
+    quantity: 0,
     shelfLife: '2025-12-01',
     aromaProfile: 'Цитрусовый, свежий, сладковатый',
     comments: 'Партия от проверенного поставщика',
@@ -19,7 +19,7 @@ const defaultIngredients = [
     botanicalName: 'Rosa damascena',
     type: 'absolute',
     origin: 'Болгария',
-    quantity: 5,
+    quantity: 0,
     shelfLife: '2026-06-15',
     aromaProfile: 'Глубокий, цветочный, медовый',
     comments: ''

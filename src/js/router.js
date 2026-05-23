@@ -3,7 +3,7 @@ import { renderIngredients } from './pages/page-ingredients.js';
 import { renderFormulas } from './pages/page-formulas.js';
 import { renderMaceration } from './pages/page-maceration.js';
 import { renderSettings } from './pages/page-settings.js';
-import { renderIngredientPicker } from './pages/ingredient-picker.js';
+import { renderIngredientPicker } from './components/ingredient-picker.js';
 
 const container = document.getElementById('main-content');
 

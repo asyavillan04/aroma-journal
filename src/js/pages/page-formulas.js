@@ -1,10 +1,16 @@
 export function renderFormulas(container) {
   container.innerHTML = `
-    <div class="formulas-page">
-      <h2>Formulas</h2>
-      <p>Your fragrance formulas will appear here.</p>
+    <div class="formulas-page journal-content">
+
+      <div class="formulas-head page-head">
+      <h2>Формулы</h2>
+
+      <button class="add-button formula-add-button" id="open-builder-btn">Новая формула</button>
+
+      </div> 
+      <p>Ваши формулы ароматов появятся здесь.</p>
     </div>
 
-        <button class="add-button formula-add-button">Новая формула</button>
+        
   `;
 }
