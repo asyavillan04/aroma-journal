@@ -1,11 +1,12 @@
 import { getIngredients, addIngredient } from '../data/list-ingredients.js';
+import { ingredientsLibrary } from '../data/ingredients-library.js'
 
 export function renderIngredientPicker(container) {
   container.innerHTML = `
     <div class="ingredient-picker">
       <h2>Find & Add Ingredient</h2>
       <div class="search-box">
-        <input type="search" id="ingredient-search" placeholder="Search by name..." autocomplete="off">
+        <input type="search" id="ingredient-search" placeholder="Поиск..." autocomplete="off">
       </div>
       <div id="create-new-item" class="create-new-item" style="display: none;">
         <span>Create "<span id="new-ingredient-name"></span>"</span>
@@ -24,7 +25,7 @@ function initPicker() {
   const newIngredientNameSpan = document.getElementById('new-ingredient-name');
   const createNewBtn = document.getElementById('create-new-btn');
 
-  const allIngredients = getIngredients();
+  const allIngredients = ingredientsLibrary;
 
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
@@ -48,18 +49,12 @@ function initPicker() {
   });
 
   createNewBtn.addEventListener('click', () => {
-    const newName = newIngredientNameSpan.textContent;
+    const newName = newIngredientNameSpan.textContent.trim();
     if (newName) {
-      addIngredient({
-        name: { en: newName, ru: newName, es: newName },
-        botanicalName: '',
-        type: '',
-        origin: '',
-        quantity: 0,
-        shelfLife: '',
-        aromaProfile: '',
-        comments: ''
-      });
+      sessionStorage.setItem('pendingIngredientAction', JSON.stringify({
+        action: 'create-new',
+        name: newName
+      }));
       window.history.back();
     }
   });
@@ -78,10 +73,14 @@ function renderResults(items, query, container) {
     </li>`
   ).join('');
 
+
   container.querySelectorAll('.btn-add[data-id]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', () => {
       const id = btn.dataset.id;
-      sessionStorage.setItem('selectedIngredientId', id);
+      sessionStorage.setItem('pendingIngredientAction', JSON.stringify({
+        action: 'add-existing',
+        ingredientId: id
+      }));
       window.history.back();
     });
   });

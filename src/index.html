@@ -24,36 +24,46 @@
     </main>
 
         <template id="ingredient-modal-template">
-        <div class="journal-content"> 
-        
-            <div class="element"> <label for="name">Название: </label> <input type="text" placeholder="Введите название"> </div>
+            <div class="modal-overlay">
+                <div class="journal-content modal-content"> 
+                
+                    <div class="element"> <label name="name">Название: <input type="text" placeholder="Введите название" class="js-ingredient-name"> </label>  </div>
 
-            <div class="element">     
-                <label for="amount">Количество: </label> <input type="number" placeholder="Введите количество">
-                <select name="measure" id="measure">
-                    <option value="mg">мг</option>
-                    <option value="ml">мл</option>
-                </select>
+                    <div class="element">     
+                        <label name="amount">Количество: <input type="number" placeholder="Введите количество" class="js-ingredient-quantity">                 
+                            <select name="measure" id="measure">
+                            <option value="mg">мг</option>
+                            <option value="ml">мл</option>
+                        </select></label> 
+
+                    </div>
+
+                    <div class="element"> <label name="origin" class="js-ingredient-origin">Происхождение: <input type="text"> </label> </div>
+
+                    <div class="element"> 
+                        <label name="type" class="js-ingredient-type"> Тип:                 
+                            <select name="type" id="type">
+                            <option type="essentialOil">Эфирное масло</option>
+                            <option type="absolute">Абсолют</option>
+                            <option type="other">Другое</option>
+                        </select> </label> 
+
+                    </div>
+
+                    <div class="element"> <label name="shelfLife" class="js-ingredient-shelfLife">Срок годности: <input type="date" id="date" name="date" > </label> </div>
+
+                    <div class="element"> <label name="aromaProfile" class="js-ingredient-aroma">Ароматический профиль: <textarea placeholder="Описание аромата компонента"> </textarea> </label>  </div>
+
+                    <div class="element"> <label name="comments" class="js-ingredient-comments">Комментарии: <textarea placeholder="Ваши комментарии о компоненте"> </textarea> </label> </div>
+                    
+                <div>
+                    <button class="js-modal-save"> Сохранить </button> 
+                    
+                    <button class="js-modal-cancel"> Отмена </button>
+                </div>
+
+                </div>
             </div>
-
-            <div class="element"> <label for="origin">Происхождение: </label> <input type="text"> </div>
-
-            <div class="element"> 
-                <label for="type">Тип: </label> 
-                <select name="type" id="type">
-                    <option type="essentialOil">Эфирное масло</option>
-                    <option type="absolute">Абсолют</option>
-                    <option type="other">Другое</option>
-                </select>
-            </div>
-
-            <div class="element"> <label for="shelfLife">Срок годности: </label> </div>
-
-            <div class="element"> <label for="aromaProfile">Ароматический профиль: </label> <input type="textarea" placeholder="Описание аромата компонента"> </div>
-
-            <div class="element"> <label for="comments">Комментарии: </label> <input type="textarea" placeholder="Ваши комментарии о компоненте"></div>
-
-        </div>
 
         </template>
 </body>
