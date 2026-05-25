@@ -18,7 +18,7 @@ export function renderIngredients(container) {
       </div>
 
          <p>Здесь будет список ваших ингредиентов</p>
-
+        
       <ul class="ingredients-list">
         ${ingredients.map(ing => `
           <li class="ingredient-item element">
