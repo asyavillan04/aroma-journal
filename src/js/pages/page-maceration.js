@@ -1,6 +1,6 @@
 export function renderMaceration(container) {
   container.innerHTML = `
-    <div class="maceration-page journal-content">
+    <div class="maceration-page page">
       <div class="mac-head page-head">
       <h2>Мацерация</h2>
       <button class="add-button ingridient-add-button">Новая мацерация</button>

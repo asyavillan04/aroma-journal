@@ -11,3 +11,7 @@
     background-image: url('../../assets/icon-delete.svg');
     background-size: cover;
 }
+
+.page {
+    height: 100%;
+}

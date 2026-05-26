@@ -1,7 +1,10 @@
 .footer-content {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 5px;
+    background-color: var(--color-accent);
+    border-radius: var(--border-radius);
+   
 }
 
 .footer-button {
@@ -15,5 +18,25 @@
 
        &:hover{
         background-color: var(--color-accent);
+    }
+}
+
+@media (min-width: 769px) {
+    footer{
+        position: fixed;
+        top: 0;
+        right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-button{
+        width: 16vw;
+        height: 16vw;
+    }
+
+    .footer-content{
+        gap:3vw;
+        padding: 0 4vw 0 4vw;
     }
 }

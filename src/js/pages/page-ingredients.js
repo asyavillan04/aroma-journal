@@ -7,7 +7,7 @@ export function renderIngredients(container) {
   const currentLang = document.documentElement.lang || 'en';
 
   container.innerHTML = `
-    <div class="ingredients-page journal-content">
+    <div class="ingredients-page page">
       
       <div class="ing-head page-head">
       <h2>Палитра</h2>
@@ -17,6 +17,7 @@ export function renderIngredients(container) {
       </button>
       </div>
 
+      <div class="journal-content"> 
          <p>Здесь будет список ваших ингредиентов</p>
         
       <ul class="ingredients-list">
@@ -29,6 +30,7 @@ export function renderIngredients(container) {
           </li>
         `).join('')}
       </ul>
+    </div>
     </div>
   `;
 
