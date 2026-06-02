@@ -22,6 +22,7 @@ h1 {
     background-color: var(--color-footer-button);
     color: var(--color-accent-2);
     margin: 0;
+    padding-left: 20px;
 }
 
 main{
@@ -44,9 +45,10 @@ main{
     gap: 20px;
 }
 
-footer {
-    grid-row: 1;
-    grid-column: 2;
+nav {
+    position: sticky;
+    bottom: 0;
+
     display: flex;
     flex-direction: row;
     flex-shrink: 0;
@@ -88,9 +90,15 @@ button:focus-visible {
   border: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
+
+    nav {
+    grid-row: 1;
+    grid-column: 2;
+    }
+
     body {
-         display: grid;
+        display: grid;
         grid-template-columns: 1fr 25vw;
         grid-template-rows: auto 1fr;
     }

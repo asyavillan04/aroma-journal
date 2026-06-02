@@ -1,4 +1,10 @@
+//import {getFormula, addFormula, deleteFormula} from '../data/list-formulas';
+
 export function renderFormulas(container) {
+
+//  const ingredients = getIngredients();
+  const currentLang = document.documentElement.lang || 'en';
+
   container.innerHTML = `
     <div class="formulas-page page">
 
