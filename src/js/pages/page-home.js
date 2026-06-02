@@ -10,7 +10,7 @@ export function renderHome(container) {
         </div>
 
         <div class="element home-element ingridients-run-out">
-            <span>Заканчивается:</span>Нет ингридиентов, которые заканчиваются
+            <span>Заканчивается:</span>Нет ингредиентов, которые заканчиваются
         </div>
 
           <div class="element home-element ingridients-palette">
