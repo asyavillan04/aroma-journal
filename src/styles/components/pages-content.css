@@ -1,6 +1,7 @@
 .add-button {
     height: min-content;
-    background-color: var(--color-block);
+    background-color: var(--color-footer-button);
+    color: var(--color-header);
     padding: 5px 10px;
     font-size: 20px;
 }
