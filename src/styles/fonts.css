@@ -2,4 +2,12 @@
   font-family: "Fleur De Leah", cursive;
   font-weight: 400;
   font-style: normal;
+};
+
+
+.jura {
+  font-family: "Jura", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
