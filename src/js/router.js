@@ -5,6 +5,7 @@ import { renderMaceration } from './pages/page-maceration.js';
 import { renderSettings } from './pages/page-settings.js';
 import { renderIngredientPicker } from './components/ingredient-picker.js';
 
+
 const container = document.getElementById('main-content');
 
 const routes = {

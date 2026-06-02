@@ -20,18 +20,18 @@ export function getFormulas() {
     return loadFormulas()
  }
 
-export function addFormula(formulaName) {
+export function addFormula(nameObject) {
   const formulas = loadFormulas();
   const firstVariant = {
     variantId: crypto?.randomUUID?.() ?? Date.now().toString(),
     created: new Date().toISOString(),
     status: 'draft',
-    formulas: [],
+    ingredients: [],
     notes: ''
   };
   const newFormula = {
     id: crypto?.randomUUID?.() ?? Date.now().toString(),
-    name: formulaName,
+    name: nameObject,
     variants: [firstVariant]
   };
   formulas.push(newFormula);
