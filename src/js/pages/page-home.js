@@ -1,8 +1,14 @@
 export function renderHome(container) {
+
+  const introKey = 'aj-intro-shown';
+  const introShown = sessionStorage.getItem(introKey);
+
   container.innerHTML = `
     <div class="home-page page">
-      <h2>Добро пожаловать в <span> Aroma Journal </span> </h2>
-      <p>Ваш личный органайзер парфюмерии. </p>
+      <h2 class="typing-title">Добро пожаловать в <span> Aroma Journal </span> </h2>
+      <div class="typing-line"></div>
+
+      <p class="subtitle-hidden">Ваш личный органайзер парфюмерии. </p>
 
       <div class="home-content journal-content">
         <section class="element home-element maturated-soon">
