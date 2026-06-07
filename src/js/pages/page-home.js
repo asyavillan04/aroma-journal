@@ -32,6 +32,13 @@ export function renderHome(container) {
       el.style.transition = 'none';
     });
 
+    const typingLine = container.querySelector('.typing-line');
+    if (typingLine) {
+        typingLine.style.width = '100%';
+        typingLine.style.opacity = '1';
+        typingLine.style.transition = 'none';
+    }
+
     const aside = document.querySelector('.detailed-info');
     if (aside) {
       aside.style.transform = 'translateX(0)';
