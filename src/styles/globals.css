@@ -10,6 +10,7 @@ html, body {
     padding: 0;
     background-color: var(--color-backround);
     color: var(--color-text);
+    overflow: clip;
 }
 body {
     display: flex;

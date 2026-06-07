@@ -1,4 +1,3 @@
-@import '../../node_modules/@a1rth/css-normalize/normalize.css';
 @import 'globals.css';
 @import 'components/nav-buttons.css';
 @import 'fonts.css';
@@ -7,3 +6,5 @@
 @import 'components/pages-content.css';
 @import 'components/page-head.css';
 @import 'components/modal.css';
+
+@import 'animations/home-animation.css'
