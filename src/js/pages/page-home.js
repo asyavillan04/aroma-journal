@@ -5,17 +5,26 @@ export function renderHome(container) {
       <p>Ваш личный органайзер парфюмерии. </p>
 
       <div class="home-content journal-content">
-        <div class="element maturated-soon">
-          <span>Созревания: </span> Нет ближайших созреваний
-        </div>
+        <section class="element home-element maturated-soon">
+          <h3>Созревания: </h3> 
+          <div class="element-content">
+            Нет ближайших созреваний
+          </div>
+        </section>
 
-        <div class="element home-element ingridients-run-out">
-            <span>Заканчивается:</span>Нет ингредиентов, которые заканчиваются
-        </div>
+        <section class="element home-element ingredients-run-out">
+            <h3>Заканчивается:</h3>
+            <div class="element-content">
+              Нет ингредиентов, которые заканчиваются
+            </div>
+        </section>
 
-          <div class="element home-element ingridients-palette">
-            <span>Парфюмерная палитра:</span> Пусто
-        </div>
+          <section class="element home-element ingridients-palette">
+            <h3>Парфюмерная палитра:</h3> 
+            <div class="element-content">
+              Пусто
+            </div>
+        </section>
 
       </div>
     </div>

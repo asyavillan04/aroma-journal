@@ -22,11 +22,13 @@ export function renderIngredients(container) {
         
       <ul class="ingredients-list">
         ${ingredients.map(ing => `
-          <li class="ingredient-item element">
-            <span>${ing.name[currentLang] || ing.name.en}</span>
-            <span class="ingredient-type">${ing.type}</span>
-            <span class="ingredient-quantity">${ing.quantity} ml</span>
-            <button class="ingredient-delete-button delete-button" data-id="${ing.id}" title="Удалить ингредиент">  </button>
+          <li class="element">
+            <div class="element-content ingredient-item">
+              <span>${ing.name[currentLang] || ing.name.en}</span>
+              <span class="ingredient-type">${ing.type}</span>
+              <span class="ingredient-quantity">${ing.quantity} ml</span>
+              <button class="ingredient-delete-button delete-button" data-id="${ing.id}" title="Удалить ингредиент">  </button>
+            </div>          
           </li>
         `).join('')}
       </ul>
