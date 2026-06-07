@@ -1,4 +1,5 @@
 # Aroma Journal
+
 This is a pet project in progress. App for tracking perfumery ingridients and organizing formulas. 
 For Web, Windows and Android.
 
@@ -16,4 +17,6 @@ Users will be able to:
 - Calculate weight of ingridients for any amount of perfume they need
 - See warnings about IRFA restrictions
 
-Planned interface languages: English, Spanish, Russian, Esperanto 
+[Demo on Git Pages](https://asyavillan04.github.io/aroma-journal/)
+
+Planned interface languages: English, Spanish, Russian, Esperanto (currently Russian only)
