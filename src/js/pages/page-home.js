@@ -5,107 +5,71 @@ export function renderHome(container) {
     <div class="home-page page">
       <h2 class="typing-title"> </h2>
       <div class="typing-line"></div>
-
-      <p class="subtitle-hidden">Ваш личный органайзер парфюмерии. </p>
-
+      <p class="subtitle-hidden">Ваш личный органайзер парфюмерии.</p>
       <div class="home-content journal-content">
         <section class="element home-element maturated-soon card-item--left">
-          <h3>Созревания: </h3> 
-          <div class="element-content">
-            Нет ближайших созреваний
-          </div>
+          <h3>Созревания:</h3>
+          <div class="element-content">Нет ближайших созреваний</div>
         </section>
-
         <section class="element home-element ingredients-run-out card-item--left">
-            <h3>Заканчивается:</h3>
-            <div class="element-content">
-              Нет ингредиентов, которые заканчиваются
-            </div>
+          <h3>Заканчивается:</h3>
+          <div class="element-content">Нет ингредиентов, которые заканчиваются</div>
         </section>
-
-          <section class="element home-element ingridients-palette card-item--left">
-            <h3>Парфюмерная палитра:</h3> 
-            <div class="element-content">
-              Пусто
-            </div>
+        <section class="element home-element ingridients-palette card-item--left">
+          <h3>Парфюмерная палитра:</h3>
+          <div class="element-content">Пусто</div>
         </section>
       </div>
     </div>
   `;
 
-
-if (introShown) {
+  if (introShown) {
+    // Сбрасываем 
     const animatedElements = container.querySelectorAll('.home-element, .subtitle-hidden, .typing-line');
     animatedElements.forEach(el => {
-        el.style.transform = 'none';
-        el.style.opacity = '1';
-        el.style.transition = 'none';
+      el.style.transform = 'none';
+      el.style.opacity = '1';
+      el.style.transition = 'none';
     });
 
     const aside = document.querySelector('.detailed-info');
     if (aside) {
-        aside.style.transform = 'translateX(0)';
-        aside.style.opacity = '1';
-        aside.style.transition = 'none';
+      aside.style.transform = 'translateX(0)';
+      aside.style.opacity = '1';
+      aside.style.transition = 'none';
     }
-    
+
     const title = container.querySelector('.typing-title');
     if (title) {
-        title.textContent = 'Добро пожаловать в Aroma Journal';
+      title.textContent = 'Добро пожаловать в Aroma Journal';
     }
-
     return;
-}
- else {
-      const cards = container.querySelectorAll('.home-element');
-      cards.forEach(card => {
-        card.style.transform = 'translateX(0)';
-        card.style.opacity = '1';
-        card.style.transition = 'none';
-      });
-
-const subtitle = container.querySelector('.subtitle-hidden');
-if (subtitle) {
-  subtitle.style.transform = 'translateY(0)';
-  subtitle.style.opacity = '1';
-  subtitle.style.transition = 'none';
-}
-
-const aside = document.querySelector('.detailed-info');
-if (aside) {
-  aside.style.transform = 'translateX(0)';
-  aside.style.opacity = '1';
-  aside.style.transition = 'none';
-}
   }
 
+  // Анимация 
   const typingTitle = container.querySelector('.typing-title');
   const typingLine = container.querySelector('.typing-line');
   const subtitle = container.querySelector('.subtitle-hidden');
   const cards = container.querySelectorAll('.card-item--left');
 
   const fullText = 'Добро пожаловать в Aroma Journal';
-  const textSpan = typingTitle.querySelector('span') || typingTitle;
-  textSpan.textContent = ''; 
+  typingTitle.textContent = '';
   let charIndex = 0;
   const typeInterval = setInterval(() => {
-    textSpan.textContent += fullText[charIndex];
+    typingTitle.textContent += fullText[charIndex];
     charIndex++;
     if (charIndex === fullText.length) {
       clearInterval(typeInterval);
-      typingLine.classList.add('visible'); 
-   
+      typingLine.classList.add('visible');
+
       setTimeout(() => {
         subtitle.classList.add('animate');
         cards.forEach((card, i) => {
           card.style.transitionDelay = `${i * 0.15}s`;
           card.classList.add('animate');
         });
-
-       const aside = document.querySelector('.detailed-info');
-      
-       if (aside) aside.classList.add('animate-right')
-        console.log('class added');
+        const aside = document.querySelector('.detailed-info');
+        if (aside) aside.classList.add('animate-right');
       }, 200);
 
       setTimeout(() => {
@@ -113,5 +77,4 @@ if (aside) {
       }, 1200);
     }
   }, 40);
-
 }
