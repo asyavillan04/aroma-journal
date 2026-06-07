@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@a1rth/css-normalize": "^1.2.4"
+    "@a1rth/css-normalize": "^1.2.4",
+    "normalize.css": "^8.0.1"
   }
 }

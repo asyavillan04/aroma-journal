@@ -1,4 +1,4 @@
-import { openIngredientSettings } from '../components/ingredient-modal.js'
+import { openIngredientSettings } from '../components/ingredient-modal.js';
 import { getIngredients, addIngredient, deleteIngredient } from '../data/list-ingredients.js';
 import { ingredientsLibrary } from '../data/ingredients-library.js';
 

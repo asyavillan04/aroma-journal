@@ -17,16 +17,17 @@
     height: 100%;
 }
 
-.extra-info {
+aside {
     display: flex;
-    height: 100%;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
     padding: 20px;
 
     background-color: var(--color-footer-button);
     color: var(--color-backround);
+    height: 100%;
 }
 
 .extra-info-text {
@@ -40,17 +41,4 @@
 
 .extra-info-picture {
     opacity: 0.3;
-}
-
-@media (min-width: 769px) {
-    .extra-info-picture {
-    margin-bottom: 60%;
-}
-}
-
-@media (max-width: 768px) {
-    .extra-info {
-        height: 30vh;
-    }
-    
 }

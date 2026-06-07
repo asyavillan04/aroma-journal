@@ -8,10 +8,8 @@ nav {
 
 nav {
     display: flex;
-    padding-right: 20px;
     align-items: center;
-    justify-content: flex-end;
-    gap: 5px;
+    gap: 10px;
     background-color: var(--color-accent);
     
    
@@ -24,11 +22,12 @@ nav {
     background-color: var(--color-footer-button);
     color: var(--color-header);
     box-shadow: none;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
 
        &:hover{
-        background-color: var(--color-accent);
+        background-color: var(--color-accent-2);
+        color: var(--color-background);
     }
 }
 
@@ -39,25 +38,10 @@ nav {
          
 }
 
-
-@media (min-width: 769px) {
-    nav {
-        width: 100%;
-        height: 100%;
-    }
-}
-
 @media (max-width: 768px) {
-
-    nav {
-        bottom: 0;
-    }
+    
     .navigation-button{
         width: 16vw;
         height: 16vw;
-    }
-
-    nav {
-        justify-content: space-around;
     }
 }
