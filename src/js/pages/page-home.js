@@ -34,15 +34,49 @@ export function renderHome(container) {
   `;
 
 
-  if (introShown) {
-    const animatedElements = container.querySelectorAll('.card-item--left, .subtitle-hidden, .typing-line');
+if (introShown) {
+    const animatedElements = container.querySelectorAll('.home-element, .subtitle-hidden, .typing-line');
     animatedElements.forEach(el => {
-      el.style.opacity = '1';
-      el.style.transform = 'none';
+        el.style.transform = 'none';
+        el.style.opacity = '1';
+        el.style.transition = 'none';
     });
+
+    const aside = document.querySelector('.detailed-info');
+    if (aside) {
+        aside.style.transform = 'translateX(0)';
+        aside.style.opacity = '1';
+        aside.style.transition = 'none';
+    }
+    
     const title = container.querySelector('.typing-title');
-    if (title) title.textContent = 'Добро пожаловать в Aroma Journal';
+    if (title) {
+        title.textContent = 'Добро пожаловать в Aroma Journal';
+    }
+
     return;
+}
+ else {
+      const cards = container.querySelectorAll('.home-element');
+      cards.forEach(card => {
+        card.style.transform = 'translateX(0)';
+        card.style.opacity = '1';
+        card.style.transition = 'none';
+      });
+
+const subtitle = container.querySelector('.subtitle-hidden');
+if (subtitle) {
+  subtitle.style.transform = 'translateY(0)';
+  subtitle.style.opacity = '1';
+  subtitle.style.transition = 'none';
+}
+
+const aside = document.querySelector('.detailed-info');
+if (aside) {
+  aside.style.transform = 'translateX(0)';
+  aside.style.opacity = '1';
+  aside.style.transition = 'none';
+}
   }
 
   const typingTitle = container.querySelector('.typing-title');
