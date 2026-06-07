@@ -38,6 +38,10 @@
     font-weight: 700;
 }
 
+.extra-info-picture {
+    opacity: 0.3;
+}
+
 @media (min-width: 769px) {
     .extra-info-picture {
     margin-bottom: 60%;
