@@ -21,20 +21,22 @@ export function renderFormulas(container) {
                 const displayName = formula.name[currentLang] || formula.name.en;
                 const variantCount = formula.variants.length;
                 return `
-                  <li class="formula-item element">
-                    <span class="formula-name">${displayName} (вариантов: ${variantCount})</span>
-                    <div class="formula-actions">
-                      <button class="formula-edit-button" data-id="${formula.id}" title="Редактировать">✎</button>
-                      <button class="formula-delete-button" data-id="${formula.id}" title="Удалить формулу">×</button>
-                    </div>
-                    <ul class="formula-variants">
-                      ${formula.variants.map((v, idx) => `
-                        <li class="variant-item">
-                          Вариант ${idx + 1} (${v.ingredients.length} компонентов) — ${v.status}
-                          <button class="variant-edit-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}">✎</button>
-                        </li>
-                      `).join('')}
-                    </ul>
+                  <li class="element">
+                     <div class="element-content formula-item">
+                        <span class="formula-name">${displayName} (вариантов: ${variantCount})</span>
+                        <div class="formula-actions">
+                          <button class="formula-edit-button" data-id="${formula.id}" title="Редактировать">✎</button>
+                          <button class="formula-delete-button" data-id="${formula.id}" title="Удалить формулу">×</button>
+                        </div>
+                        <ul class="formula-variants">
+                          ${formula.variants.map((v, idx) => `
+                            <li class="variant-item">
+                              Вариант ${idx + 1} (${v.ingredients.length} компонентов) — ${v.status}
+                              <button class="variant-edit-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}">✎</button>
+                            </li>
+                          `).join('')}
+                        </ul>
+                      <div>
                   </li>
                 `;
               }).join('')}
