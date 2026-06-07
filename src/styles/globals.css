@@ -8,14 +8,22 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: var(--color-backround);
     color: var(--color-text);
     overflow: clip;
 }
+
+html {
+    background-color: var(--color-accent-2);
+}
+
 body {
     display: flex;
     flex-direction: column;
     font-family: 'Jura';
+
+    border-radius: 10px;
+    background-color: var(--color-backround);
+    border: 2px solid var(--color-accent-2);
 }
 
 .content {
@@ -63,9 +71,6 @@ main, nav, header, aside {
     outline: 1px solid var(--color-header);
 }
 
-html {
-    border: 2px solid var(--color-accent-2);
-}
 
 button,
 input[type="button"],
