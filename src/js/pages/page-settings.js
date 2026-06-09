@@ -5,4 +5,11 @@ export function renderSettings(container) {
       <p>Здесь будут настройки языка и темы.</p>
     </div>
   `;
+    // Сброс aside 
+const aside = document.querySelector('.detailed-info');
+if (aside) {
+    aside.style.transform = 'translateX(0)';
+    aside.style.opacity = '1';
+    aside.style.transition = 'none';
+}
 }

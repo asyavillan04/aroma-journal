@@ -23,6 +23,14 @@ export function renderHome(container) {
     </div>
   `;
 
+    // Сброс aside 
+const aside = document.querySelector('.detailed-info');
+if (aside) {
+    aside.style.transform = 'translateX(0)';
+    aside.style.opacity = '1';
+    aside.style.transition = 'none';
+}
+
   if (introShown) {
     // Сбрасываем 
     const animatedElements = container.querySelectorAll('.home-element, .subtitle-hidden, .typing-line');

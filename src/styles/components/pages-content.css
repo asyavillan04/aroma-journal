@@ -6,15 +6,53 @@
     font-size: 20px;
 }
 
-.delete-button {
+.delete-button, .edit-button, .view-button {
     width: 27px;
     height: 27px;
-    background-image: url('../../assets/icon-delete.svg');
+    
     background-size: cover;
 }
 
+.delete-button {
+    background-image: url('../../assets/icon-delete.svg');
+}
+
+.edit-button {
+    background-image: url('../../assets/icon-edit.svg');
+}
+
+.view-button {
+    background-image: url('../../assets/icon-eye.svg');
+}
 .page {
     height: 100%;
+}
+
+.formula-image,
+.ingredient-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Заглушка, если нет картинки */
+.formula-image-placeholder,
+.ingredient-image-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: var(--color-gray-2);
+  background-image: url(../../assets/pic-bottle.svg);
+  background-size: 28px 28px;  
+  background-repeat: no-repeat;     
+  background-position: center;     
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  font-size: 20px;
 }
 
 aside {
@@ -41,4 +79,116 @@ aside {
 
 .extra-info-picture {
     opacity: 0.3;
+}
+
+
+/* Grid, чтобы текст не плыл */
+.formula-item {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Картинка или заглушка */
+.formula-image,
+.formula-image-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.formula-image-placeholder {
+    background-color: var(--color-gray-2);
+    background-image: url(../../assets/pic-bottle.svg);
+    background-size: 28px 28px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Текстовая часть (название + количество) */
+.formula-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.formula-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+}
+
+.formula-variant-count {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.3;
+}
+
+/* Кнопки */
+.formula-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.ingredient-item {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Картинка или заглушка */
+.ingredient-image,
+.ingredient-image-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.ingredient-image-placeholder {
+    background-color: var(--color-gray-2);
+    background-image: url(../../assets/pic-bottle.svg);
+    background-size: 28px 28px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Текстовая часть (название, тип, количество) */
+.ingredient-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.ingredient-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+}
+
+.ingredient-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+.ingredient-meta span {
+    white-space: nowrap;
+}
+
+/* Кнопки */
+.ingredient-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
 }

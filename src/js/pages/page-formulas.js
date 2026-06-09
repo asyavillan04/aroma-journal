@@ -1,6 +1,57 @@
 import { getFormulas, addFormula, deleteFormula } from '../data/list-formulas.js';
 import { openVariantModal } from '../components/variant-modal.js';
 
+// Показывает варианты формулы в aside
+function renderVariantsInAside(formula) {
+  const aside = document.querySelector('.detailed-info');
+  if (!aside) return;
+
+  const currentLang = document.documentElement.lang || 'en';
+  const displayName = formula.name[currentLang] || formula.name.en;
+
+  aside.innerHTML = `
+    <div class="aside-formula-details">
+      <h3>${displayName}</h3>
+      <div class="aside-formula-variants">
+        ${formula.variants.length === 0
+          ? '<p>Нет вариантов</p>'
+          : formula.variants.map((v, idx) => `
+              <div class="aside-variant-item">
+                <span>Вариант ${idx + 1} — ${v.status}</span>
+                <button class="edit-button variant-edit-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}">✎</button>
+              </div>
+            `).join('')
+        }
+      </div>
+      <button class="add-button add-variant-button" data-formula-id="${formula.id}">+ Новый вариант</button>
+    </div>
+  `;
+
+  // Обработчики для кнопок внутри aside
+  aside.querySelectorAll('.variant-edit-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fid = btn.dataset.formulaId;
+      const vid = btn.dataset.variantId;
+      const f = getFormulas().find(f => f.id === fid);
+      if (f) {
+        openVariantModal(f, vid, () => {
+          renderVariantsInAside(f); // обновить aside после редактирования
+        });
+      }
+    });
+  });
+
+  aside.querySelector('.add-variant-button')?.addEventListener('click', () => {
+    const fid = aside.querySelector('.add-variant-button').dataset.formulaId;
+    const f = getFormulas().find(f => f.id === fid);
+    if (f) {
+      openVariantModal(f, null, () => { // null = новый вариант
+        renderVariantsInAside(f);
+      });
+    }
+  });
+}
+
 export function renderFormulas(container) {
   const formulas = getFormulas();
   const currentLang = document.documentElement.lang || 'en';
@@ -11,7 +62,6 @@ export function renderFormulas(container) {
         <h2>Формулы</h2>
         <button class="add-button formula-add-button" id="open-builder-btn">Новая формула</button>
       </div>
-
       <div class="journal-content">
         ${formulas.length === 0
           ? '<p>Ваши формулы ароматов появятся здесь.</p>'
@@ -20,23 +70,23 @@ export function renderFormulas(container) {
               ${formulas.map(formula => {
                 const displayName = formula.name[currentLang] || formula.name.en;
                 const variantCount = formula.variants.length;
+                const imageHtml = formula.image
+                  ? `<img class="formula-image" src="${formula.image}" alt="${displayName}">`
+                  : `<div class="formula-image-placeholder"></div>`;
+
                 return `
                   <li class="element">
-                     <div class="element-content formula-item">
-                        <span class="formula-name">${displayName} (вариантов: ${variantCount})</span>
-                        <div class="formula-actions">
-                          <button class="formula-edit-button" data-id="${formula.id}" title="Редактировать">✎</button>
-                          <button class="formula-delete-button" data-id="${formula.id}" title="Удалить формулу">×</button>
-                        </div>
-                        <ul class="formula-variants">
-                          ${formula.variants.map((v, idx) => `
-                            <li class="variant-item">
-                              Вариант ${idx + 1} (${v.ingredients.length} компонентов) — ${v.status}
-                              <button class="variant-edit-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}">✎</button>
-                            </li>
-                          `).join('')}
-                        </ul>
-                      <div>
+                    <div class="element-content formula-item">
+                      ${imageHtml}
+                      <div class="formula-text">
+                        <span class="formula-name">${displayName}</span>
+                        <span class="formula-variant-count">${variantCount} вариантов</span>
+                      </div>
+                      <div class="formula-actions">
+                        <button class="formula-view-button view-button" data-id="${formula.id}" title="Варианты"></button>
+                        <button class="formula-delete-button delete-button" data-id="${formula.id}" title="Удалить формулу"></button>
+                      </div>
+                    </div>
                   </li>
                 `;
               }).join('')}
@@ -47,19 +97,31 @@ export function renderFormulas(container) {
     </div>
   `;
 
-const openBuilderBtn = document.getElementById('open-builder-btn');
-if (openBuilderBtn) {
-  openBuilderBtn.addEventListener('click', () => {
-    const newName = { en: 'New Formula', ru: 'Новая формула', es: 'Nueva fórmula' };
-    const newFormula = addFormula(newName);
+  // Кнопка "Новая формула" – ввод имени и создание
+  const openBuilderBtn = document.getElementById('open-builder-btn');
+  if (openBuilderBtn) {
+    openBuilderBtn.addEventListener('click', () => {
+      const name = prompt('Введите название новой формулы:');
+      if (name && name.trim()) {
+        const nameObj = { en: name.trim(), ru: name.trim(), es: name.trim() };
+        const newFormula = addFormula(nameObj);
+        openVariantModal(newFormula, newFormula.variants[0].variantId, () => {
+          renderFormulas(container);
+        });
+      }
+    });
+  }
 
-    const firstVariantId = newFormula.variants[0].variantId;
-    openVariantModal(newFormula, firstVariantId, () => {
-      renderFormulas(container);
+  // Кнопка "Варианты" – показать в aside
+  document.querySelectorAll('.formula-view-button[data-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const formula = formulas.find(f => f.id === id);
+      if (formula) renderVariantsInAside(formula);
     });
   });
-}
 
+  // Удаление формулы
   document.querySelectorAll('.formula-delete-button[data-id]').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id;
@@ -68,37 +130,19 @@ if (openBuilderBtn) {
       const name = formula.name[currentLang] || formula.name.en;
       if (confirm(`Удалить формулу "${name}" и все её варианты?`)) {
         deleteFormula(id);
+        // Очищаем aside, если удаляемая формула была в нём
+        const aside = document.querySelector('.detailed-info');
+        if (aside) aside.innerHTML = '';
         renderFormulas(container);
       }
     });
   });
 
-
-  document.querySelectorAll('.formula-edit-button[data-id]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const formulaId = btn.dataset.id;
-      const formula = formulas.find(f => f.id === formulaId);
-      if (!formula) return;
-
-      const firstVariant = formula.variants[0];
-      if (firstVariant) {
-        openVariantModal(formula, firstVariant.variantId, (updatedFormula) => {
-
-          renderFormulas(container);
-        });
-      }
-    });
-  });
-
-  document.querySelectorAll('.variant-edit-button[data-variant-id]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const formulaId = btn.dataset.formulaId;
-      const variantId = btn.dataset.variantId;
-      const formula = formulas.find(f => f.id === formulaId);
-      if (!formula) return;
-      openVariantModal(formula, variantId, (updatedFormula) => {
-        renderFormulas(container);
-      });
-    });
-  });
+  // Сброс aside в видимое состояние
+  const aside = document.querySelector('.detailed-info');
+  if (aside) {
+    aside.style.transform = 'translateX(0)';
+    aside.style.opacity = '1';
+    aside.style.transition = 'none';
+  }
 }
