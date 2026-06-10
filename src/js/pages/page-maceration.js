@@ -11,7 +11,7 @@ export function renderMaceration(container) {
     
   `;
 
-  // Сбрасываем aside в видимое состояние (на случай, если он был скрыт)
+  // Сброс aside 
 const aside = document.querySelector('.detailed-info');
 if (aside) {
     aside.style.transform = 'translateX(0)';
