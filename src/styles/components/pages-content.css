@@ -1,6 +1,6 @@
 .add-button {
     height: min-content;
-    background-color: var(--color-footer-button);
+    background-color: var(--color-accent-1);
     color: var(--color-header);
     padding: 5px 10px;
     font-size: 20px;
@@ -63,7 +63,7 @@ aside {
 
     padding: 20px;
 
-    background-color: var(--color-footer-button);
+    background-color: var(--color-accent-1);
     color: var(--color-backround);
     height: 100%;
 }
@@ -83,7 +83,7 @@ aside {
 }
 
 
-/* Grid, чтобы текст не плыл */
+/* Grid */
 .formula-item {
     display: grid;
     grid-template-columns: 40px 1fr auto;

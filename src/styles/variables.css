@@ -1,9 +1,10 @@
 :root {
-    --color-backround: #a9ad95;
+    --color-backround: #adac95;
     --color-header: #0e1e00;
-    --color-footer-button: #3b4d35;
+    
+    --color-accent-1: #53674c;
 
-    --color-accent: #2d4127;
+    --color-accent: #3b5234;
     --color-accent-2: #182c11;
 
     --color-block: #babaa7;

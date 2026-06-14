@@ -77,27 +77,27 @@ ul {
 
 /* Бегунок (ползунок) */
 ::-webkit-scrollbar-thumb {
-    background: var(--color-accent);
+    background: var(--color-accent-1);
     border-radius: 8px;
     transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent-2);
+    background: var(--color-accent);
 }
 
 /* Кнопки со стрелками (фон и форма стрелок) */
 ::-webkit-scrollbar-button {
     width: 16px;
     height: 16px;
-    background: var(--color-accent);
+    background: var(--color-accent-1);
     background-repeat: no-repeat;
     background-position: center;
     background-size: 12px;
 }
 
 ::-webkit-scrollbar-button:hover {
-    background-color: var(--color-accent-2);
+    background-color: var(--color-accent);
 }
 
 /* Стрелка вверх */

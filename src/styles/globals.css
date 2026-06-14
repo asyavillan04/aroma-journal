@@ -34,7 +34,7 @@ h1 {
     font-family: 'Fleur De Leah', sans-serif;
     font-size: 50px;
 
-    background-color: var(--color-footer-button);
+    background-color: var(--color-accent-1);
     color: var(--color-accent-2);
     margin: 0;
     padding-left: 20px;
