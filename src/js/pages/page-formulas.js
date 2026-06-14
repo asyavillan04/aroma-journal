@@ -18,38 +18,65 @@ function renderVariantsInAside(formula) {
           : formula.variants.map((v, idx) => `
               <div class="aside-variant-item">
                 <span>Вариант ${idx + 1} — ${v.status}</span>
-                <button class="edit-button variant-edit-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}">✎</button>
+                <button class="view-button variant-view-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}" title="Просмотр инфографики"></button>
               </div>
             `).join('')
         }
       </div>
       <button class="add-button add-variant-button" data-formula-id="${formula.id}">+ Новый вариант</button>
+      <div id="variant-infographic"></div>
     </div>
   `;
 
-  // Обработчики для кнопок внутри aside
-  aside.querySelectorAll('.variant-edit-button').forEach(btn => {
+  // Обработчики для кнопок просмотра
+  aside.querySelectorAll('.variant-view-button').forEach(btn => {
     btn.addEventListener('click', () => {
       const fid = btn.dataset.formulaId;
       const vid = btn.dataset.variantId;
       const f = getFormulas().find(f => f.id === fid);
       if (f) {
-        openVariantModal(f, vid, () => {
-          renderVariantsInAside(f); // обновить aside после редактирования
-        });
+        const variant = f.variants.find(v => v.variantId === vid);
+        if (variant) {
+          renderVariantInfographic(variant, f);
+        }
       }
     });
   });
 
+  // Обработчик для добавления нового варианта
   aside.querySelector('.add-variant-button')?.addEventListener('click', () => {
     const fid = aside.querySelector('.add-variant-button').dataset.formulaId;
     const f = getFormulas().find(f => f.id === fid);
     if (f) {
-      openVariantModal(f, null, () => { // null = новый вариант
+      openVariantModal(f, null, () => {
         renderVariantsInAside(f);
       });
     }
   });
+}
+
+// Заглушка для инфографики
+function renderVariantInfographic(variant, formula) {
+  const container = document.getElementById('variant-infographic');
+  if (!container) return;
+
+  const currentLang = document.documentElement.lang || 'en';
+  const variantNumber = formula.variants.findIndex(v => v.variantId === variant.variantId) + 1;
+  const ingredientsList = variant.ingredients.map(ing => {
+    const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
+    const name = ingredient ? (ingredient.name[currentLang] || ingredient.name.en) : 'Неизвестный';
+    return `${name}: ${ing.percent}%`;
+  }).join('<br>');
+
+  container.innerHTML = `
+    <div class="infographic-placeholder">
+      <h4>Вариант ${variantNumber}</h4>
+      <p><strong>Статус:</strong> ${variant.status}</p>
+      <p><strong>Ингредиенты:</strong><br>${ingredientsList || 'Нет ингредиентов'}</p>
+      <p><strong>Заметки:</strong> ${variant.notes || 'Нет заметок'}</p>
+      <p><em>Инфографика появится здесь позже</em></p>
+    </div>
+  `;
 }
 
 export function renderFormulas(container) {
