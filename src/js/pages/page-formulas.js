@@ -3,7 +3,7 @@ import { renderVariantInfographic } from '../components/infographics.js';
 import { renderVariantForm } from '../components/variant-form.js';
 import { renderFormulaFormInAside } from '../components/formula-form.js';
 import { getIngredients } from '../data/list-ingredients.js';
-import { openMobileAside } from '../components/aside.js';
+import { openMobileAside, initMobileAside } from '../components/aside.js';
 
 // Показывает варианты формулы в aside (первый уровень)
 function renderVariantsInAside(formula) {
@@ -39,7 +39,10 @@ function renderVariantsInAside(formula) {
     </div>
   `;
 
-  // Кнопки просмотра
+  // Открываем aside на мобильных
+  openMobileAside();
+
+  // Обработчики кнопок
   aside.querySelectorAll('.variant-view-button').forEach(btn => {
     btn.addEventListener('click', () => {
       const fid = btn.dataset.formulaId;
@@ -52,7 +55,6 @@ function renderVariantsInAside(formula) {
     });
   });
 
-  // Кнопки редактирования
   aside.querySelectorAll('.edit-button').forEach(btn => {
     btn.addEventListener('click', () => {
       const fid = btn.dataset.formulaId;
@@ -66,7 +68,6 @@ function renderVariantsInAside(formula) {
     });
   });
 
-  // Добавление нового варианта
   const addVariantBtn = aside.querySelector('.add-variant-button');
   if (addVariantBtn) {
     addVariantBtn.addEventListener('click', () => {
@@ -81,7 +82,7 @@ function renderVariantsInAside(formula) {
   }
 }
 
-// Показывает детали конкретного варианта
+// Показывает детали конкретного варианта (второй уровень)
 function showVariantDetails(formula, variant, aside) {
   const variantsListDiv = aside.querySelector('.variants-list');
   const variantDetailsDiv = aside.querySelector('.variant-details');
@@ -116,10 +117,11 @@ function showVariantDetails(formula, variant, aside) {
     variantsListDiv.style.display = 'block';
     variantDetailsDiv.style.display = 'none';
     variantDetailsDiv.innerHTML = '';
+    // На мобильных панель остаётся открытой (показывает список вариантов)
   });
 }
 
-// Функция-обёртка для рендера формы варианта (чтобы не дублировать получение aside)
+// Обёртка для рендера формы варианта
 function renderVariantFormInAside(formula, variantId, onSave) {
   const aside = document.querySelector('.detailed-info');
   if (!aside) return;
@@ -128,6 +130,7 @@ function renderVariantFormInAside(formula, variantId, onSave) {
   });
 }
 
+// Главная функция рендера списка формул
 export function renderFormulas(container) {
   const formulas = getFormulas();
   const currentLang = document.documentElement.lang || 'en';
@@ -173,7 +176,10 @@ export function renderFormulas(container) {
     </div>
   `;
 
-  // Новая формула
+  // Инициализация кнопки закрытия для aside (делаем один раз)
+  initMobileAside();
+
+  // Кнопка "Новая формула"
   const openBuilderBtn = document.getElementById('open-builder-btn');
   if (openBuilderBtn) {
     openBuilderBtn.addEventListener('click', () => {
@@ -183,7 +189,7 @@ export function renderFormulas(container) {
     });
   }
 
-  // Показать варианты
+  // Показать варианты формулы
   document.querySelectorAll('.formula-view-button[data-id]').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id;
@@ -207,6 +213,7 @@ export function renderFormulas(container) {
       }
     });
   });
+}
 
   // Сброс aside
   const aside = document.querySelector('.detailed-info');
@@ -214,5 +221,5 @@ export function renderFormulas(container) {
     aside.style.transform = 'translateX(0)';
     aside.style.opacity = '1';
     aside.style.transition = 'none';
-  }
 }
+

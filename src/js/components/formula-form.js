@@ -1,13 +1,11 @@
 import { addFormula, updateVariant } from '../data/list-formulas.js';
 import { renderVariantForm } from './variant-form.js';
+import { openMobileAside, initMobileAside } from '../components/aside.js';
 
 export function renderFormulaFormInAside(onSave) {
   const aside = document.querySelector('.detailed-info');
   if (!aside) return;
-
-  // Временная "пустая" формула, чтобы передать в renderVariantForm
   const tempFormula = { name: { en: '', ru: '', es: '' }, variants: [] };
-
   renderVariantForm(aside, tempFormula, null, null, {
     isNewFormula: true,
     returnToPrevious: () => {
@@ -27,4 +25,5 @@ export function renderFormulaFormInAside(onSave) {
       else aside.innerHTML = '';
     }
   });
+  openMobileAside();
 }

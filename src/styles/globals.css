@@ -208,7 +208,7 @@ button:focus-visible {
         width: 80%;
         max-width: 320px;
         height: 100%;
-        background-color: var(--color-bg, white);
+        background-color: var(--color-backround);
         z-index: 1000;
         transition: right 0.3s ease;
         box-shadow: -2px 0 10px rgba(0,0,0,0.2);
