@@ -73,7 +73,7 @@ function drawPerfumeWheel(containerId, data) {
         ctx.fill();
 
         // Граница
-        ctx.strokeStyle = '#ffffff';
+        ctx.strokeStyle = '#0b3d00';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);

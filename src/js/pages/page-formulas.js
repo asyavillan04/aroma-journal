@@ -1,9 +1,9 @@
 import { getFormulas, addFormula, deleteFormula } from '../data/list-formulas.js';
 import { openVariantModal } from '../components/variant-modal.js';
 import { renderVariantInfographic } from '../components/infographics.js';
-import { getIngredients } from '../data/list-ingredients.js'; 
+import { getIngredients } from '../data/list-ingredients.js';
 
-// Показывает варианты формулы в aside
+// Показывает варианты формулы в aside (первый уровень)
 function renderVariantsInAside(formula) {
   const aside = document.querySelector('.detailed-info');
   if (!aside) return;
@@ -11,27 +11,33 @@ function renderVariantsInAside(formula) {
   const currentLang = document.documentElement.lang || 'en';
   const displayName = formula.name[currentLang] || formula.name.en;
 
-aside.innerHTML = `
-  <div class="aside-formula-details element">
-    <h3>${displayName}</h3>
-    <div class="aside-formula-variants">
-      ${formula.variants.length === 0
-        ? '<p>Нет вариантов</p>'
-        : formula.variants.map((v, idx) => `
-            <div class="aside-variant-item element-content">
-              <span>Вариант ${idx + 1} — ${v.status}</span>
-              <button class="view-button variant-view-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}" title="Просмотр инфографики"></button>
-            </div>
-          `).join('')
-      }
+  // Очищаем aside и создаём контейнер для переключения режимов
+  aside.innerHTML = `
+    <div class="aside-content">
+      <div class="variants-list">
+        <div class="aside-formula-details element">
+          <h3>${displayName}</h3>
+          <div class="aside-formula-variants">
+            ${formula.variants.length === 0
+              ? '<p>Нет вариантов</p>'
+              : formula.variants.map((v, idx) => `
+                  <div class="aside-variant-item element-content">
+                    <span>Вариант ${idx + 1} — ${v.status}</span>
+                    <button class="view-button variant-view-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}" title="Просмотр инфографики"></button>
+                  </div>
+                `).join('')
+            }
+          </div>
+          <button class="add-button add-variant-button" data-formula-id="${formula.id}">+ Новый вариант</button>
+        </div>
+      </div>
+      <div class="variant-details" style="display: none;">
+        <!-- сюда будет рендериться детальная информация о варианте -->
+      </div>
     </div>
-    <button class="add-button add-variant-button" data-formula-id="${formula.id}">+ Новый вариант</button>
-    <div class="variant-text"></div>          <!-- добавлено -->
-    <div id="variant-infographic"></div>
-  </div>
-`;
+  `;
 
-  // Обработчики для кнопок просмотра
+  // Обработчики для кнопок просмотра варианта
   aside.querySelectorAll('.variant-view-button').forEach(btn => {
     btn.addEventListener('click', () => {
       const fid = btn.dataset.formulaId;
@@ -40,7 +46,7 @@ aside.innerHTML = `
       if (f) {
         const variant = f.variants.find(v => v.variantId === vid);
         if (variant) {
-          renderVariantInfographic(variant, f);
+          showVariantDetails(f, variant, aside);
         }
       }
     });
@@ -55,6 +61,44 @@ aside.innerHTML = `
         renderVariantsInAside(f);
       });
     }
+  });
+}
+
+// Показывает детали конкретного варианта внутри aside (второй уровень)
+function showVariantDetails(formula, variant, aside) {
+  const variantsListDiv = aside.querySelector('.variants-list');
+  const variantDetailsDiv = aside.querySelector('.variant-details');
+  
+  if (!variantsListDiv || !variantDetailsDiv) return;
+  
+  variantsListDiv.style.display = 'none';
+  variantDetailsDiv.style.display = 'block';
+  
+  const currentLang = document.documentElement.lang || 'en';
+  const formulaName = formula.name[currentLang] || formula.name.en;
+  const variantNumber = formula.variants.findIndex(v => v.variantId === variant.variantId) + 1;
+  
+  variantDetailsDiv.innerHTML = `
+    <div class="variant-details-container element">
+      <div class="variant-details-head">
+      <button class="back-to-variants-button"><</button>
+      <h3>${formulaName} — Вариант ${variantNumber}</h3>
+      </div>
+      <div class="variant-text"></div>
+      <div id="variant-infographic"></div>
+    </div>
+  `;
+  
+  const textContainer = variantDetailsDiv.querySelector('.variant-text');
+  const canvasContainer = variantDetailsDiv.querySelector('#variant-infographic');
+  
+  renderVariantInfographic(variant, formula, textContainer, canvasContainer, true); 
+  
+  const backBtn = variantDetailsDiv.querySelector('.back-to-variants-button');
+  backBtn.addEventListener('click', () => {
+    variantsListDiv.style.display = 'block';
+    variantDetailsDiv.style.display = 'none';
+    variantDetailsDiv.innerHTML = '';
   });
 }
 
@@ -103,7 +147,7 @@ export function renderFormulas(container) {
     </div>
   `;
 
-  // Кнопка "Новая формула" – ввод имени и создание
+  // Кнопка "Новая формула"
   const openBuilderBtn = document.getElementById('open-builder-btn');
   if (openBuilderBtn) {
     openBuilderBtn.addEventListener('click', () => {
@@ -118,12 +162,14 @@ export function renderFormulas(container) {
     });
   }
 
-  // Кнопка "Варианты" – показать в aside
+  // Показать варианты в aside 
   document.querySelectorAll('.formula-view-button[data-id]').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id;
       const formula = formulas.find(f => f.id === id);
-      if (formula) renderVariantsInAside(formula);
+      if (formula) {
+        renderVariantsInAside(formula);
+      }
     });
   });
 
@@ -136,7 +182,6 @@ export function renderFormulas(container) {
       const name = formula.name[currentLang] || formula.name.en;
       if (confirm(`Удалить формулу "${name}" и все её варианты?`)) {
         deleteFormula(id);
-        // Очищаем aside, если удаляемая формула была в нём
         const aside = document.querySelector('.detailed-info');
         if (aside) aside.innerHTML = '';
         renderFormulas(container);
@@ -144,7 +189,7 @@ export function renderFormulas(container) {
     });
   });
 
-  // Сброс aside в видимое состояние
+  // Сброс aside (если он был скрыт)
   const aside = document.querySelector('.detailed-info');
   if (aside) {
     aside.style.transform = 'translateX(0)';

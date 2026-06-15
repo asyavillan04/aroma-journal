@@ -19,8 +19,21 @@
     overflow: clip;
 }
 
-.home-element, .aside-formula-details {
+.home-element, .aside-formula-details, .variant-details-container {
     flex-direction: column;
+}
+
+.element .aside-formula-details{
+    width: 100%;
+}
+
+.variant-details-head {
+    display: flex;
+    width: 100%;
+}
+
+.variant-details-head h1 {
+    width: 100%;
 }
 
 .element-content {
