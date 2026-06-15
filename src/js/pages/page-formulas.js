@@ -1,5 +1,7 @@
 import { getFormulas, addFormula, deleteFormula } from '../data/list-formulas.js';
 import { openVariantModal } from '../components/variant-modal.js';
+import { renderVariantInfographic } from '../components/infographics.js';
+import { getIngredients } from '../data/list-ingredients.js'; 
 
 // Показывает варианты формулы в aside
 function renderVariantsInAside(formula) {
@@ -9,24 +11,25 @@ function renderVariantsInAside(formula) {
   const currentLang = document.documentElement.lang || 'en';
   const displayName = formula.name[currentLang] || formula.name.en;
 
-  aside.innerHTML = `
-    <div class="aside-formula-details">
-      <h3>${displayName}</h3>
-      <div class="aside-formula-variants">
-        ${formula.variants.length === 0
-          ? '<p>Нет вариантов</p>'
-          : formula.variants.map((v, idx) => `
-              <div class="aside-variant-item">
-                <span>Вариант ${idx + 1} — ${v.status}</span>
-                <button class="view-button variant-view-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}" title="Просмотр инфографики"></button>
-              </div>
-            `).join('')
-        }
-      </div>
-      <button class="add-button add-variant-button" data-formula-id="${formula.id}">+ Новый вариант</button>
-      <div id="variant-infographic"></div>
+aside.innerHTML = `
+  <div class="aside-formula-details element">
+    <h3>${displayName}</h3>
+    <div class="aside-formula-variants">
+      ${formula.variants.length === 0
+        ? '<p>Нет вариантов</p>'
+        : formula.variants.map((v, idx) => `
+            <div class="aside-variant-item element-content">
+              <span>Вариант ${idx + 1} — ${v.status}</span>
+              <button class="view-button variant-view-button" data-formula-id="${formula.id}" data-variant-id="${v.variantId}" title="Просмотр инфографики"></button>
+            </div>
+          `).join('')
+      }
     </div>
-  `;
+    <button class="add-button add-variant-button" data-formula-id="${formula.id}">+ Новый вариант</button>
+    <div class="variant-text"></div>          <!-- добавлено -->
+    <div id="variant-infographic"></div>
+  </div>
+`;
 
   // Обработчики для кнопок просмотра
   aside.querySelectorAll('.variant-view-button').forEach(btn => {
@@ -53,30 +56,6 @@ function renderVariantsInAside(formula) {
       });
     }
   });
-}
-
-// Заглушка для инфографики
-function renderVariantInfographic(variant, formula) {
-  const container = document.getElementById('variant-infographic');
-  if (!container) return;
-
-  const currentLang = document.documentElement.lang || 'en';
-  const variantNumber = formula.variants.findIndex(v => v.variantId === variant.variantId) + 1;
-  const ingredientsList = variant.ingredients.map(ing => {
-    const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
-    const name = ingredient ? (ingredient.name[currentLang] || ingredient.name.en) : 'Неизвестный';
-    return `${name}: ${ing.percent}%`;
-  }).join('<br>');
-
-  container.innerHTML = `
-    <div class="infographic-placeholder">
-      <h4>Вариант ${variantNumber}</h4>
-      <p><strong>Статус:</strong> ${variant.status}</p>
-      <p><strong>Ингредиенты:</strong><br>${ingredientsList || 'Нет ингредиентов'}</p>
-      <p><strong>Заметки:</strong> ${variant.notes || 'Нет заметок'}</p>
-      <p><em>Инфографика появится здесь позже</em></p>
-    </div>
-  `;
 }
 
 export function renderFormulas(container) {

@@ -153,6 +153,10 @@ button:focus-visible {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M10 7l5 5-5 5z'/%3E%3C/svg%3E");
 }
 
+.hidden {
+    display: none !important;
+}
+
 @media (min-width: 769px) {
 
     body {

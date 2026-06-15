@@ -19,7 +19,7 @@
     overflow: clip;
 }
 
-.home-element {
+.home-element, .aside-formula-details {
     flex-direction: column;
 }
 
@@ -30,6 +30,12 @@
     padding: 10px;
     align-items: center;
     justify-content: space-between;
+}
+
+.add-variant-button {
+    padding: 10px;
+    margin-right: auto;
+    margin-left: 10px;
 }
 
 h3 {
