@@ -96,7 +96,7 @@ function drawPerfumeWheel(containerId, data) {
 
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius * 0.2, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, radius * 0.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
 }
