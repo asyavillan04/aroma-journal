@@ -1,5 +1,23 @@
-
 const STORAGE_KEY = 'aj_ingredients';
+
+export const NOTE_CATEGORIES = [
+  { id: 'citrus', label: 'Цитрусовые' },
+  { id: 'floral', label: 'Цветочные' },
+  { id: 'woody', label: 'Древесные' },
+  { id: 'mineral', label: 'Минеральные' },
+  { id: 'musky', label: 'Мускусные' },
+  { id: 'spicy', label: 'Пряные' },
+  { id: 'fruity', label: 'Фруктовые' },
+  { id: 'green', label: 'Зелёные' },
+  { id: 'balsamic', label: 'Бальзамические' },
+  { id: 'animalic', label: 'Животные' }
+];
+
+// Базовый объект для профиля (по умолчанию все нули)
+const defaultNotesProfile = NOTE_CATEGORIES.reduce((acc, cat) => {
+  acc[cat.id] = 0;
+  return acc;
+}, {});
 
 const defaultIngredients = [
   {
@@ -12,6 +30,7 @@ const defaultIngredients = [
     shelfLife: '2025-12-01',
     aromaProfile: 'Цитрусовый, свежий, сладковатый',
     comments: 'Партия от проверенного поставщика',
+    notesProfile: { ...defaultNotesProfile, citrus: 8, fruity: 3, green: 2 }
   },
   {
     id: 'rose-absolute',
@@ -22,7 +41,8 @@ const defaultIngredients = [
     quantity: 0,
     shelfLife: '2026-06-15',
     aromaProfile: 'Глубокий, цветочный, медовый',
-    comments: ''
+    comments: '',
+    notesProfile: { ...defaultNotesProfile, floral: 9, woody: 2, fruity: 1 }
   },
 ];
 
@@ -30,12 +50,16 @@ function loadIngredients() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw) {
     try {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      // Для старых данных без notesProfile дефолтный профиль
+      return parsed.map(ing => ({
+        ...ing,
+        notesProfile: ing.notesProfile || { ...defaultNotesProfile }
+      }));
     } catch {
       console.error('Ошибка парсинга данных ингредиентов');
     }
   }
-
   return [...defaultIngredients];
 }
 
@@ -52,6 +76,7 @@ export function addIngredient(newIngredient) {
   const ingredientWithId = {
     ...newIngredient,
     id: crypto?.randomUUID?.() ?? Date.now().toString(),
+    notesProfile: newIngredient.notesProfile || { ...defaultNotesProfile }
   };
   ingredients.push(ingredientWithId);
   saveIngredients(ingredients);

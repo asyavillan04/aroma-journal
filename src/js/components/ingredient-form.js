@@ -1,6 +1,5 @@
-import { addIngredient, updateIngredient, getIngredients } from '../data/list-ingredients.js';
+import { addIngredient, updateIngredient, getIngredients, NOTE_CATEGORIES } from '../data/list-ingredients.js';
 
-// вспомогательная функция для экранирования HTML
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/[&<>]/g, function(m) {
@@ -21,8 +20,21 @@ export function renderIngredientForm(aside, ingredientId, onSave, onCancel) {
   const origin = existingIngredient?.origin || '';
   const quantity = existingIngredient?.quantity ?? 0;
   const shelfLife = existingIngredient?.shelfLife || '';
-  const aromaProfile = existingIngredient?.aromaProfile || '';
+  const aromaProfileText = existingIngredient?.aromaProfile || '';
   const comments = existingIngredient?.comments || '';
+  const notesProfile = existingIngredient?.notesProfile || {};
+
+  // Генерация HTML для слайдеров
+  const slidersHtml = NOTE_CATEGORIES.map(cat => {
+    const value = notesProfile[cat.id] || 0;
+    return `
+      <label class="note-slider-item">
+        <span class="note-label">${cat.label}</span>
+        <input type="range" class="note-slider" data-category="${cat.id}" min="0" max="10" step="1" value="${value}">
+        <span class="note-value" data-category="${cat.id}">${value}</span>
+      </label>
+    `;
+  }).join('');
 
   aside.innerHTML = `
     <div class="aside-form ingredient-form">
@@ -43,14 +55,30 @@ export function renderIngredientForm(aside, ingredientId, onSave, onCancel) {
       <label>Страна происхождения: <input type="text" id="ingredient-origin" value="${escapeHtml(origin)}"></label>
       <label>Количество: <input type="number" id="ingredient-quantity" value="${quantity}" step="0.1"></label>
       <label>Срок годности: <input type="date" id="ingredient-shelf-life" value="${shelfLife}"></label>
-      <label>Ароматический профиль: <textarea id="ingredient-aroma-profile">${escapeHtml(aromaProfile)}</textarea></label>
+      <label>Ароматический профиль (текст): <textarea id="ingredient-aroma-profile">${escapeHtml(aromaProfileText)}</textarea></label>
       <label>Комментарии: <textarea id="ingredient-comments">${escapeHtml(comments)}</textarea></label>
+      
+      <fieldset class="notes-profile">
+        <legend>Арома-профиль (числовой, 0–10)</legend>
+        ${slidersHtml}
+      </fieldset>
+      
       <div class="form-actions">
         <button class="js-form-save">Сохранить</button>
         <button class="js-form-cancel">Отмена</button>
       </div>
     </div>
   `;
+
+  // Обновление отображаемого значения слайдера
+  const sliders = aside.querySelectorAll('.note-slider');
+  sliders.forEach(slider => {
+    const category = slider.dataset.category;
+    const valueSpan = aside.querySelector(`.note-value[data-category="${category}"]`);
+    slider.addEventListener('input', () => {
+      valueSpan.textContent = slider.value;
+    });
+  });
 
   const saveBtn = aside.querySelector('.js-form-save');
   const cancelBtn = aside.querySelector('.js-form-cancel');
@@ -78,6 +106,13 @@ export function renderIngredientForm(aside, ingredientId, onSave, onCancel) {
     const newAroma = aside.querySelector('#ingredient-aroma-profile').value.trim();
     const newComments = aside.querySelector('#ingredient-comments').value.trim();
 
+    // Собирает профиль нот
+    const updatedNotesProfile = {};
+    NOTE_CATEGORIES.forEach(cat => {
+      const slider = aside.querySelector(`.note-slider[data-category="${cat.id}"]`);
+      updatedNotesProfile[cat.id] = slider ? parseInt(slider.value, 10) : 0;
+    });
+
     const ingredientData = {
       id: existingIngredient?.id,
       name: nameObj,
@@ -87,7 +122,8 @@ export function renderIngredientForm(aside, ingredientId, onSave, onCancel) {
       quantity: newQuantity,
       shelfLife: newShelfLife,
       aromaProfile: newAroma,
-      comments: newComments
+      comments: newComments,
+      notesProfile: updatedNotesProfile
     };
 
     let updatedIngredients;

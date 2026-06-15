@@ -3,6 +3,7 @@ import { renderVariantInfographic } from '../components/infographics.js';
 import { renderVariantForm } from '../components/variant-form.js';
 import { renderFormulaFormInAside } from '../components/formula-form.js';
 import { getIngredients } from '../data/list-ingredients.js';
+import { openMobileAside } from '../components/aside.js';
 
 // Показывает варианты формулы в aside (первый уровень)
 function renderVariantsInAside(formula) {

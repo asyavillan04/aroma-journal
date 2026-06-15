@@ -199,3 +199,45 @@ button:focus-visible {
     }
 
 }
+
+@media (max-width: 768px) {
+    .detailed-info {
+        position: fixed;
+        top: 0;
+        right: -100%;       
+        width: 80%;
+        max-width: 320px;
+        height: 100%;
+        background-color: var(--color-bg, white);
+        z-index: 1000;
+        transition: right 0.3s ease;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+        overflow-y: auto;
+    }
+    .detailed-info.open {
+        right: 0;
+    }
+    .close-aside-btn {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+    .close-aside-btn {
+        display: none;
+    }
+}
+@media (min-width: 769px) {
+    .detailed-info {
+        position: relative;
+        right: auto;
+        width: auto;
+        height: auto;
+        box-shadow: none;
+        transition: none;
+    }
+    .close-aside-btn {
+        display: none !important;
+    }
+}

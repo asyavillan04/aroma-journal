@@ -1,28 +1,8 @@
-import { initRouter } from './router.js';
-
-function bindNavigation() {
-  document.querySelectorAll('[data-hash]').forEach(button => {
-    button.addEventListener('click', () => {
-      window.location.hash = button.dataset.hash;
-    });
-  });
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    initRouter();
-    bindNavigation();
-  });
-} else {
-  initRouter();
-  bindNavigation();
-}
-
-function initMobileAside() {
+export function initMobileAside() {
     const aside = document.querySelector('.detailed-info');
     if (!aside) return;
 
-    // Добавляем кнопку закрытия в aside (если её нет)
+    // Добавляем кнопку закрытия в aside 
     if (!aside.querySelector('.close-aside-btn')) {
         const closeBtn = document.createElement('div');
         closeBtn.className = 'close-aside-btn';
@@ -45,12 +25,10 @@ function initMobileAside() {
     });
 }
 
-// Функция открытия aside (вызывать, когда нужно показать панель)
-function openMobileAside() {
+// Функция открытия aside
+export function openMobileAside() {
     const aside = document.querySelector('.detailed-info');
     if (window.innerWidth <= 768 && aside) {
         aside.classList.add('open');
     }
 }
-
-// В тех местах, где вы вызываете renderVariantsInAside, renderFormulaFormInAside и т.п., после рендера вызывайте openMobileAside()
