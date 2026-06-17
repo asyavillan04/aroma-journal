@@ -4,95 +4,114 @@ function loadFormulas() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
         try {
-        return JSON.parse(raw);
+            const formulas = JSON.parse(raw);
+            // Миграция: добавляем measure и totalAmount старым вариантам
+            formulas.forEach(formula => {
+                formula.variants.forEach(variant => {
+                    if (!variant.measure) variant.measure = 'percent';
+                    if (variant.totalAmount === undefined) variant.totalAmount = 100;
+                    // amount у ингредиентов
+                    variant.ingredients.forEach(ing => {
+                        if (ing.percent !== undefined && ing.amount === undefined) {
+                            ing.amount = ing.percent;
+                            delete ing.percent;
+                        }
+                    });
+                });
+            });
+            return formulas;
         } catch {
-        console.error('Ошибка парсинга формул');
+            console.error('Ошибка парсинга формул');
         }
     }
     return [];
- }
+}
 
 function saveFormulas(formulas) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formulas));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formulas));
 }
 
 export function getFormulas() { 
-    return loadFormulas()
- }
+    return loadFormulas();
+}
 
 export function addFormula(nameObject) {
-  const formulas = loadFormulas();
-  const firstVariant = {
-    variantId: crypto?.randomUUID?.() ?? Date.now().toString(),
-    created: new Date().toISOString(),
-    status: 'draft',
-    ingredients: [],
-    notes: ''
-  };
-  const newFormula = {
-    id: crypto?.randomUUID?.() ?? Date.now().toString(),
-    name: nameObject,
-    variants: [firstVariant]
-  };
-  formulas.push(newFormula);
-  saveFormulas(formulas);
-  return newFormula;
+    const formulas = loadFormulas();
+    const firstVariant = {
+        variantId: crypto?.randomUUID?.() ?? Date.now().toString(),
+        created: new Date().toISOString(),
+        status: 'draft',
+        measure: 'percent',           // ← добавлено
+        totalAmount: 100,             // ← добавлено
+        ingredients: [],
+        notes: ''
+    };
+
+    const newFormula = {
+        id: crypto?.randomUUID?.() ?? Date.now().toString(),
+        name: nameObject,
+        variants: [firstVariant]
+    };
+    formulas.push(newFormula);
+    saveFormulas(formulas);
+    return newFormula;
 }
 
 export function updateVariant(formulaId, variantId, newData) {
-  const formulas = loadFormulas();
-  const formula = formulas.find(f => f.id === formulaId);
-  
-  if (!formula) return null;
-  
-  const variantIndex = formula.variants.findIndex(v => v.variantId === variantId);
-  
-  if (variantIndex !== -1) {
-    formula.variants[variantIndex] = { ...formula.variants[variantIndex], ...newData };
-  } else {
-    const newVariant = {
-      variantId: crypto?.randomUUID?.() ?? Date.now().toString(),
-      created: new Date().toISOString(),
-      status: 'draft',
-      ...newData
-    };
-    formula.variants.push(newVariant);
-  }
-  
-  saveFormulas(formulas);
-  return formula;
+    const formulas = loadFormulas();
+    const formula = formulas.find(f => f.id === formulaId);
+    
+    if (!formula) return null;
+    
+    const variantIndex = formula.variants.findIndex(v => v.variantId === variantId);
+    
+    if (variantIndex !== -1) {
+        formula.variants[variantIndex] = { ...formula.variants[variantIndex], ...newData };
+    } else {
+        const newVariant = {
+            variantId: crypto?.randomUUID?.() ?? Date.now().toString(),
+            created: new Date().toISOString(),
+            status: 'draft',
+            measure: 'percent',        // ← добавлено
+            totalAmount: 100,          // ← добавлено
+            ...newData
+        };
+        formula.variants.push(newVariant);
+    }
+    
+    saveFormulas(formulas);
+    return formula;
 }
 
 export function deleteVariant(formulaId, variantId) {
-  let formulas = loadFormulas();
-  const formula = formulas.find(f => f.id === formulaId);
-  if (!formula) return false; 
+    let formulas = loadFormulas();
+    const formula = formulas.find(f => f.id === formulaId);
+    if (!formula) return false; 
 
-  formula.variants = formula.variants.filter(v => v.variantId !== variantId);
+    formula.variants = formula.variants.filter(v => v.variantId !== variantId);
 
-  if (formula.variants.length === 0) {
-    formulas = formulas.filter(f => f.id !== formulaId);
-  } else {
-
-    const index = formulas.findIndex(f => f.id === formulaId);
-    if (index !== -1) {
-      formulas[index] = formula;
+    if (formula.variants.length === 0) {
+        formulas = formulas.filter(f => f.id !== formulaId);
+    } else {
+        const index = formulas.findIndex(f => f.id === formulaId);
+        if (index !== -1) {
+            formulas[index] = formula;
+        }
     }
-  }
 
-  saveFormulas(formulas);
-  return true;
+    saveFormulas(formulas);
+    return true;
 }
 
 export function deleteFormula(formulaId) {
-  let formulas = loadFormulas();
-  const initialLength = formulas.length;
+    let formulas = loadFormulas();
+    const initialLength = formulas.length;
 
-  formulas = formulas.filter(f => f.id !== formulaId);
+    formulas = formulas.filter(f => f.id !== formulaId);
 
-  if (formulas.length !== initialLength) {
-    saveFormulas(formulas);
-    return true;
-  }
-  return false; 
+    if (formulas.length !== initialLength) {
+        saveFormulas(formulas);
+        return true;
+    }
+    return false; 
 }

@@ -10,7 +10,13 @@ export const NOTE_CATEGORIES = [
   { id: 'fruity', label: 'Фруктовые' },
   { id: 'green', label: 'Зелёные' },
   { id: 'balsamic', label: 'Бальзамические' },
-  { id: 'animalic', label: 'Животные' }
+  { id: 'animalic', label: 'Животные' },
+  { id: 'aquatic', label: 'Акватические' },
+  { id: 'gourmand', label: 'Гурманские' },
+  { id: 'amber', label: 'Амбровые' },
+  { id: 'leather', label: 'Кожаные' },
+  { id: 'smoky', label: 'Дымные' },
+  { id: 'abstract', label: 'Абстрактные' }
 ];
 
 // Базовый объект для профиля (по умолчанию все нули)

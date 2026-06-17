@@ -154,7 +154,7 @@ button:focus-visible {
 }
 
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 @media (min-width: 769px) {

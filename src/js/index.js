@@ -18,39 +18,13 @@ if (document.readyState === 'loading') {
   bindNavigation();
 }
 
-function initMobileAside() {
-    const aside = document.querySelector('.detailed-info');
-    if (!aside) return;
-
-    // Добавляем кнопку закрытия в aside (если её нет)
-    if (!aside.querySelector('.close-aside-btn')) {
-        const closeBtn = document.createElement('div');
-        closeBtn.className = 'close-aside-btn';
-        closeBtn.innerHTML = '←'; // или &larr;
-        closeBtn.setAttribute('aria-label', 'Закрыть');
-        // Вставляем в начало aside
-        aside.insertBefore(closeBtn, aside.firstChild);
-        closeBtn.addEventListener('click', () => {
-            aside.classList.remove('open');
-        });
-    }
-
-    // Закрытие при клике вне aside на мобильных
-    document.body.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768 && aside.classList.contains('open')) {
-            if (!aside.contains(e.target) && !e.target.closest('.formula-view-button') && !e.target.closest('.edit-button')) {
-                aside.classList.remove('open');
-            }
-        }
-    });
-}
-
-// Функция открытия aside (вызывать, когда нужно показать панель)
-function openMobileAside() {
-    const aside = document.querySelector('.detailed-info');
-    if (window.innerWidth <= 768 && aside) {
-        aside.classList.add('open');
-    }
-}
-
-// В тех местах, где вы вызываете renderVariantsInAside, renderFormulaFormInAside и т.п., после рендера вызывайте openMobileAside()
+document.getElementById('test-api-btn')?.addEventListener('click', () => {
+  console.log('Кнопка нажата!');
+  fetch('http://localhost:5000/api/calculate')
+    .then(r => {
+      console.log('Статус ответа:', r.status);
+      return r.json();
+    })
+    .then(data => console.log('Данные:', data))
+    .catch(err => console.error('Ошибка fetch:', err));
+});
