@@ -1,102 +1,145 @@
-import { getIngredients } from '../data/list-ingredients.js'; 
+import { getIngredients } from '../data/list-ingredients.js';
+import { updateVariant } from '../data/list-formulas.js';
 
-export function renderVariantInfographic(variant, formula) {
-  const textContainer = document.querySelector('.variant-text');
-  const canvasContainer = document.getElementById('variant-infographic');
-  if (!textContainer || !canvasContainer) return;
+// Шаблон SVG для колеса ароматов (заглушка)
+const wheelPlaceholder = `
+<div class="infographic-section wheel-section">
+  <h4>Колесо ароматов</h4>
+  <div class="wheel-placeholder">
+    <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(#eee 0% 20%, #ddd 20% 40%, #eee 40% 60%, #ddd 60% 80%, #eee 80% 100%);margin:0 auto;"></div>
+    <p>Категории ароматов будут отображаться на колесе</p>
+  </div>
+</div>
+`;
+
+async function renderVariantInfographic(variant, formula) {
+  const container = document.getElementById('variant-infographic');
+  if (!container) return;
 
   const currentLang = document.documentElement.lang || 'en';
   const variantNumber = formula.variants.findIndex(v => v.variantId === variant.variantId) + 1;
-  const ingredientsList = variant.ingredients.map(ing => {
-    const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
-    const name = ingredient ? (ingredient.name[currentLang] || ingredient.name.en) : 'Неизвестный';
-    return `${name}: ${ing.percent}%`;
-  }).join('<br>');
 
-  textContainer.innerHTML = `
-    <h4>Вариант ${variantNumber}</h4>
-    <p><strong>Статус:</strong> ${variant.status}</p>
-    <p><strong>Ингредиенты:</strong><br>${ingredientsList || 'Нет ингредиентов'}</p>
-    <p><strong>Заметки:</strong> ${variant.notes || 'Нет заметок'}</p>
-  `;
+  // Показываем загрузку
+  container.innerHTML = `<div class="infographic-loading">Загрузка расчётов...</div>`;
 
-  const demoWheelData = [
-    { label: 'Цитрусовые', value: 28 },
-    { label: 'Цветочные', value: 22 },
-    { label: 'Древесные', value: 18 },
-    { label: 'Шипровые', value: 12 },
-    { label: 'Фужерные', value: 10 },
-    { label: 'Восточные', value: 10 }
-  ];
+  try {
+    // 1. Отправляем запрос к API
+    const requestBody = {
+      measure: variant.measure,
+      totalAmount: variant.totalAmount,
+      ingredients: variant.ingredients.map(ing => ({
+        ingredientId: ing.ingredientId,
+        amount: ing.amount
+      }))
+    };
 
-  drawPerfumeWheel('variant-infographic', demoWheelData);
-}
-
-
-function drawPerfumeWheel(containerId, data) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-    const canvas = document.createElement('canvas');
-    const size = 300;
-    canvas.width = size;
-    canvas.height = size;
-    canvas.style.width = '100%';
-    canvas.style.maxWidth = '300px';
-    canvas.style.height = 'auto';
-    container.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
-
-    const total = data.reduce((sum, item) => sum + item.value, 0);
-    if (total === 0) return;
-
-    const centerX = size / 2;
-    const centerY = size / 2;
-    const radius = size * 0.4;
-    let startAngle = -Math.PI / 2;
-
-    const colors = [
-        '#F4A261', '#E76F51', '#6B8E23', '#9B59B6',
-        '#3498DB', '#E67E22', '#2ECC71', '#F1C40F',
-        '#E84393', '#5D6D7E'
-    ];
-
-    // Cектора
-    data.forEach((item, index) => {
-        const angle = (item.value / total) * Math.PI * 2;
-        const endAngle = startAngle + angle;
-        ctx.beginPath();
-        ctx.fillStyle = colors[index % colors.length];
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.closePath();
-        ctx.fill();
-
-        // Граница
-        ctx.strokeStyle = '#0b3d00';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.lineTo(centerX, centerY);
-        ctx.stroke();
-
-        // Подпись
-        const midAngle = startAngle + angle / 2;
-        const textRadius = radius * 0.65;
-        const x = centerX + Math.cos(midAngle) * textRadius;
-        const y = centerY + Math.sin(midAngle) * textRadius;
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 12px "Segoe UI", sans-serif';
-        ctx.fillText(item.label, x - 15, y - 5);
-
-        startAngle = endAngle;
+    const response = await fetch('http://localhost:5000/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
     });
 
+    if (!response.ok) {
+      throw new Error(`Ошибка сервера: ${response.status}`);
+    }
 
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius * 0.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
+    const data = await response.json();
+
+    // 2. Формируем список ингредиентов с процентами
+    const ingredientsList = data.ingredients.map(ing => {
+      const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
+      const name = ingredient ? (ingredient.name[currentLang] || ingredient.name.en) : 'Неизвестный';
+      const display = variant.measure === 'percent'
+        ? `${ing.percent}%`
+        : `${ing.amount} (${ing.percent}%)`;
+      return `<li>${name}: ${display}</li>`;
+    }).join('');
+
+    // 3. Предупреждение, если сумма процентов не равна 100
+    const warningHTML = (!data.isPercentTotalOk && data.scaledTo100)
+      ? `
+        <div id="percent-warning" class="warning-box">
+          <p>Сумма: ${data.currentSum}% (отличается от 100%). Пересчитать?</p>
+          <button id="recalculate-btn" class="add-button">Пересчитать до 100%</button>
+          <button id="keep-as-is-btn" class="add-button">Не пересчитывать</button>
+        </div>
+      `
+      : '';
+
+    // 4. Собираем финальный HTML
+    container.innerHTML = `
+      <div class="infographic-container">
+        <!-- Секция пирамиды (заглушка) -->
+        <div class="infographic-section pyramid-section">
+          <h4>Пирамида аромата</h4>
+          <div class="pyramid-placeholder">
+            <p>Верхние ноты, ноты сердца, базовые ноты появятся здесь</p>
+          </div>
+        </div>
+
+        <!-- Секция колеса ароматов (заглушка) -->
+        <div class="infographic-section wheel-section">
+          <h4>Колесо ароматов</h4>
+          <div class="wheel-placeholder">
+            ${wheelPlaceholder}
+            <p>Категории ароматов будут отображаться на колесе</p>
+          </div>
+        </div>
+
+        <!-- Секция раскрытия и сводки -->
+        <div class="infographic-section reveal-section">
+          <h4>Раскрытие и состав</h4>
+          <div class="reveal-controls">
+            <label><input type="radio" name="reveal-type" value="skin" checked> На коже</label>
+            <label><input type="radio" name="reveal-type" value="blotter"> На блоттере</label>
+          </div>
+          <div class="reveal-editor">
+            <p>Редактирование раскрытия появится здесь</p>
+          </div>
+        </div>
+
+        <!-- Сводка по ингредиентам -->
+        <div class="infographic-section summary-section">
+          <h4>Вариант ${variantNumber}</h4>
+          <p><strong>Единицы:</strong> ${data.measure}</p>
+          ${data.measure !== 'percent' ? `<p><strong>Общий объём:</strong> ${data.totalAmount}</p>` : ''}
+          <p><strong>Ингредиенты:</strong></p>
+          <ul>${ingredientsList}</ul>
+          ${warningHTML}
+        </div>
+      </div>
+    `;
+
+    // 5. Обработчики кнопок (пересчёт до 100%)
+    if (!data.isPercentTotalOk && data.scaledTo100) {
+      document.getElementById('recalculate-btn')?.addEventListener('click', async () => {
+        variant.ingredients = data.scaledTo100.map(ing => ({
+          ingredientId: ing.ingredientId,
+          amount: ing.amount
+        }));
+        variant.measure = 'percent';
+        variant.totalAmount = 100;
+
+        updateVariant(formula.id, variant.variantId, variant, () => {
+          renderVariantInfographic(variant, formula);
+        });
+      });
+
+      document.getElementById('keep-as-is-btn')?.addEventListener('click', () => {
+        const warning = document.getElementById('percent-warning');
+        if (warning) warning.style.display = 'none';
+      });
+    }
+
+  } catch (error) {
+    console.error('Ошибка при получении расчётов:', error);
+    container.innerHTML = `
+      <div class="infographic-error">
+        <p>Не удалось загрузить расчёты. Убедитесь, что сервер запущен.</p>
+        <p class="error-details">${error.message}</p>
+      </div>
+    `;
+  }
 }
+
+export { renderVariantInfographic };

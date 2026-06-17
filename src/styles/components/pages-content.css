@@ -66,6 +66,8 @@ aside {
     background-color: var(--color-accent-1);
     color: var(--color-backround);
     height: 100%;
+
+    overflow-y: auto;
 }
 
 .extra-info-text {
