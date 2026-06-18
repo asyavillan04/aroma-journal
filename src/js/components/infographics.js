@@ -4,21 +4,21 @@ import { updateVariant } from '../data/list-formulas.js';
 // Список категорий нот
 const NOTE_CATEGORIES = [
   { id: 'citrus', label: 'Цитрусовые', color: '#FFD700' },
-  { id: 'floral', label: 'Цветочные', color: '#FF69B4' },
-  { id: 'woody', label: 'Древесные', color: '#8B4513' },
+  { id: 'floral', label: 'Цветочные', color: '#e996bf' },
+  { id: 'woody', label: 'Древесные', color: '#845e43' },
   { id: 'mineral', label: 'Минеральные', color: '#A9A9A9' },
   { id: 'musky', label: 'Мускусные', color: '#D2B48C' },
-  { id: 'spicy', label: 'Пряные', color: '#FF4500' },
-  { id: 'fruity', label: 'Фруктовые', color: '#FFA500' },
-  { id: 'green', label: 'Зелёные', color: '#228B22' },
+  { id: 'spicy', label: 'Пряные', color: '#a12b00' },
+  { id: 'fruity', label: 'Фруктовые', color: '#f0aa5e' },
+  { id: 'green', label: 'Зелёные', color: '#5e8b22' },
   { id: 'balsamic', label: 'Бальзамические', color: '#8B0000' },
   { id: 'animalic', label: 'Животные', color: '#4B0082' },
-  { id: 'aquatic', label: 'Акватические', color: '#00CED1' },
-  { id: 'gourmand', label: 'Гурманские', color: '#D2691E' },
+  { id: 'aquatic', label: 'Акватические', color: '#008d90' },
+  { id: 'gourmand', label: 'Гурманские', color: '#d2511e' },
   { id: 'amber', label: 'Амбровые', color: '#FFBF00' },
   { id: 'leather', label: 'Кожаные', color: '#3B2F2F' },
-  { id: 'smoky', label: 'Дымные', color: '#708090' },
-  { id: 'abstract', label: 'Абстрактные', color: '#C0C0C0' }
+  { id: 'smoky', label: 'Дымные', color: '#515268' },
+  { id: 'abstract', label: 'Абстрактные', color: '#d3cce0' }
 ];
 
 /**

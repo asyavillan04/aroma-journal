@@ -1,17 +1,17 @@
 :root {
-    --color-backround: #adac95;
+    --color-backround: #abab98;
     --color-header: #0e1e00;
     
-    --color-accent-1: #53674c;
+    --color-accent-1: #697d5f;
 
-    --color-accent: #3b5234;
-    --color-accent-2: #182c11;
+    --color-accent: #496042;
+    --color-accent-2: #213918;
 
-    --color-block: #babaa7;
+    --color-block: #bcbca8;
 
     --color-text: #2f3a2c;
 
-    --color-section-accent: #723e26;
+    --color-section-accent: #84492e;
     --color-section-accent-2: #8d6e46;
 
     --border-radius: 5px;
