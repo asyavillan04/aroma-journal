@@ -1,7 +1,7 @@
 import { getIngredients } from '../data/list-ingredients.js';
 import { updateVariant } from '../data/list-formulas.js';
 
-// Список категорий нот
+// Категории нот с цветами (те, что вы обновили)
 const NOTE_CATEGORIES = [
   { id: 'citrus', label: 'Цитрусовые', color: '#FFD700' },
   { id: 'floral', label: 'Цветочные', color: '#e996bf' },
@@ -22,94 +22,129 @@ const NOTE_CATEGORIES = [
 ];
 
 /**
- * Строит SVG-строку для колеса ароматов на основе карты вкладов нот.
- * @param {Object} contributions - объект { categoryId: суммарнаяИнтенсивность }
- * @returns {string} SVG-разметка
+ * Рассчитывает суммарный вклад каждой категории нот в варианте.
+ * @param {Array} ingredients - массив ингредиентов варианта с процентами
+ * @returns {Array} массив объектов { category, label, color, contribution }
  */
-function buildWheelSVG(contributions) {
-  const total = Object.values(contributions).reduce((sum, val) => sum + val, 0);
-  if (total === 0) {
-    // Если нет нот – рисуем пустое колесо
-    return `
-      <svg viewBox="0 0 200 200" width="200" height="200">
-        <circle cx="100" cy="100" r="95" fill="none" stroke="#ccc" stroke-width="2"/>
-        <circle cx="100" cy="100" r="70" fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="4 2"/>
-        <circle cx="100" cy="100" r="40" fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="4 2"/>
-        <text x="100" y="105" text-anchor="middle" fill="#999" font-size="12">Нет данных</text>
-      </svg>
-    `;
-  }
-
-  const radius = 95;
-  const cx = 100, cy = 100;
-  let currentAngle = -90; // начинаем сверху
-  let paths = '';
-
-  for (const cat of NOTE_CATEGORIES) {
-    const value = contributions[cat.id] || 0;
-    if (value === 0) continue;
-    const sliceAngle = (value / total) * 360;
-    const endAngle = currentAngle + sliceAngle;
-
-    const x1 = cx + radius * Math.cos((currentAngle * Math.PI) / 180);
-    const y1 = cy + radius * Math.sin((currentAngle * Math.PI) / 180);
-    const x2 = cx + radius * Math.cos((endAngle * Math.PI) / 180);
-    const y2 = cy + radius * Math.sin((endAngle * Math.PI) / 180);
-
-    const largeArc = sliceAngle > 180 ? 1 : 0;
-    const path = `M${cx},${cy} L${x1},${y1} A${radius},${radius} 0 ${largeArc} 1 ${x2},${y2} Z`;
-    paths += `<path d="${path}" fill="${cat.color}" stroke="#fff" stroke-width="1"/>`;
-    currentAngle = endAngle;
-  }
-
-  return `
-    <svg viewBox="0 0 200 200" width="200" height="200">
-      ${paths}
-      <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#fff" stroke-width="2"/>
-    </svg>
-  `;
-}
-
-/**
- * Рассчитывает суммарный вклад нот для варианта на основе его ингредиентов и их процентов.
- * @param {Array} ingredientsWithPercents - массив объектов { ingredientId, percent }
- * @returns {Object} { categoryId: суммарная Интенсивность }
- */
-function calculateVariantNoteContributions(ingredientsWithPercents) {
+function calculateVariantNoteContributions(ingredients) {
   const allIngredients = getIngredients();
   const contributions = {};
-  NOTE_CATEGORIES.forEach(cat => contributions[cat.id] = 0);
 
-  ingredientsWithPercents.forEach(({ ingredientId, percent }) => {
-    const ingredient = allIngredients.find(ing => ing.id === ingredientId);
+  ingredients.forEach(ing => {
+    const ingredient = allIngredients.find(i => i.id === ing.ingredientId);
     if (!ingredient || !ingredient.notesProfile) return;
 
-    Object.entries(ingredient.notesProfile).forEach(([catId, intensity]) => {
-      if (contributions.hasOwnProperty(catId)) {
-        // intensity — число от 0 до 10 (или другое), умножаем на долю в формуле
-        contributions[catId] += (intensity * percent) / 100;
+    const totalIntensity = Object.values(ingredient.notesProfile).reduce((sum, val) => sum + val, 0);
+    if (totalIntensity === 0) return;
+
+    Object.entries(ingredient.notesProfile).forEach(([category, intensity]) => {
+      if (intensity > 0) {
+        const normalizedIntensity = intensity / totalIntensity;
+        const contribution = (normalizedIntensity * ing.percent) / 100;
+        contributions[category] = (contributions[category] || 0) + contribution;
       }
     });
   });
 
-  return contributions;
+  return NOTE_CATEGORIES.map(cat => ({
+    ...cat,
+    contribution: contributions[cat.id] || 0
+  }));
 }
 
-// =============================================
-// ГЛАВНАЯ ФУНКЦИЯ 
-// =============================================
-async function renderVariantInfographic(variant, formula) {
-  const container = document.getElementById('variant-infographic');
-  if (!container) return;
+/**
+ * Строит SVG колеса ароматов
+ * @param {Array} noteContributions - результат calculateVariantNoteContributions
+ * @returns {string} строка SVG
+ */
+function buildWheelSVG(noteContributions) {
+  const RADIUS = 90;
+  const INNER_RADIUS = 40;
+  const CENTER = 100;
+  const total = noteContributions.reduce((sum, cat) => sum + cat.contribution, 0);
+
+  if (total === 0) {
+    return `<svg viewBox="0 0 200 200" width="200" height="200">
+      <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS}" fill="none" stroke="var(--color-backround)" stroke-width="2"/>
+      <circle cx="${CENTER}" cy="${CENTER}" r="${INNER_RADIUS}" fill="none" stroke="var(--color-backround)" stroke-width="2"/>
+      <text x="${CENTER}" y="${CENTER}" text-anchor="middle" dy=".3em" fill="var(--color-backround)" font-size="12">Нет данных</text>
+    </svg>`;
+  }
+
+  let currentAngle = -90;
+  let sectors = '';
+
+  noteContributions.forEach((cat, index) => {
+    if (cat.contribution <= 0) return;
+
+    const sliceAngle = (cat.contribution / total) * 360;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + sliceAngle;
+
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+
+    const x1Outer = CENTER + RADIUS * Math.cos(startRad);
+    const y1Outer = CENTER + RADIUS * Math.sin(startRad);
+    const x2Outer = CENTER + RADIUS * Math.cos(endRad);
+    const y2Outer = CENTER + RADIUS * Math.sin(endRad);
+
+    const x1Inner = CENTER + INNER_RADIUS * Math.cos(startRad);
+    const y1Inner = CENTER + INNER_RADIUS * Math.sin(startRad);
+    const x2Inner = CENTER + INNER_RADIUS * Math.cos(endRad);
+    const y2Inner = CENTER + INNER_RADIUS * Math.sin(endRad);
+
+    const path = [
+      `M ${x1Outer} ${y1Outer}`,
+      `A ${RADIUS} ${RADIUS} 0 ${sliceAngle > 180 ? 1 : 0} 1 ${x2Outer} ${y2Outer}`,
+      `L ${x2Inner} ${y2Inner}`,
+      `A ${INNER_RADIUS} ${INNER_RADIUS} 0 ${sliceAngle > 180 ? 1 : 0} 0 ${x1Inner} ${y1Inner}`,
+      'Z'
+    ].join(' ');
+
+    const delay = index * 0.15;
+    sectors += `
+      <path d="${path}" fill="${cat.color}" opacity="0.85" stroke="#fff" stroke-width="1"
+            style="transform-origin: ${CENTER}px ${CENTER}px; animation: sectorReveal 0.6s ease-out forwards; animation-delay: ${delay}s;">
+        <title>${cat.label} — ${cat.contribution.toFixed(1)}%</title>
+      </path>`;
+
+    currentAngle = endAngle;
+  });
+
+  const cssAnimation = `
+    @keyframes sectorReveal {
+      0% { opacity: 0; transform: rotate(-90deg); }
+      100% { opacity: 0.85; transform: rotate(0deg); }
+    }
+  `;
+
+  return `
+    <svg viewBox="0 0 200 200" width="200" height="200">
+      <style>${cssAnimation}</style>
+      ${sectors}
+      <circle cx="${CENTER}" cy="${CENTER}" r="${INNER_RADIUS}" fill="var(--color-bg, white)" stroke="var(--color-text-secondary)" stroke-width="1"/>
+      <text x="${CENTER}" y="${CENTER}" text-anchor="middle" dy=".3em" fill="var(--color-text-secondary)" font-size="10">Колесо</text>
+    </svg>`;
+}
+
+/**
+ * Отображает инфографику варианта в aside.
+ * @param {Object} variant - объект варианта
+ * @param {Object} formula - объект формулы
+ * @param {HTMLElement} textContainer - контейнер для текстовой инфо
+ * @param {HTMLElement} canvasContainer - контейнер для колеса
+ * @param {boolean} includeControls - показывать ли переключатель раскрытия
+ */
+export async function renderVariantInfographic(variant, formula, textContainer, canvasContainer, includeControls = false) {
+  if (!canvasContainer) return;
 
   const currentLang = document.documentElement.lang || 'en';
   const variantNumber = formula.variants.findIndex(v => v.variantId === variant.variantId) + 1;
 
-  // Показываем загрузку
-  container.innerHTML = `<div class="infographic-loading">Загрузка расчётов...</div>`;
+  canvasContainer.innerHTML = `<div class="infographic-loading">Загрузка данных...</div>`;
 
   try {
-    // 1. Отправляем запрос к API
     const requestBody = {
       measure: variant.measure,
       totalAmount: variant.totalAmount,
@@ -125,63 +160,33 @@ async function renderVariantInfographic(variant, formula) {
       body: JSON.stringify(requestBody)
     });
 
-    if (!response.ok) {
-      throw new Error(`Ошибка сервера: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
 
     const data = await response.json();
 
-    // 2. Рассчитываем вклад нот
-    const noteContributions = calculateVariantNoteContributions(data.ingredients);
+    // Текстовая информация (информация о варианте)
+    if (textContainer) {
+      const ingredientsList = data.ingredients.map(ing => {
+        const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
+        const name = ingredient ? (ingredient.name[currentLang] || ingredient.name.en) : 'Неизвестный';
+        const display = variant.measure === 'percent'
+          ? `${ing.percent}%`
+          : `${ing.amount} (${ing.percent}%)`;
+        return `<li>${name}: ${display}</li>`;
+      }).join('');
 
-    // 3. Формируем HTML
-    const ingredientsList = data.ingredients.map(ing => {
-      const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
-      const name = ingredient ? (ingredient.name[currentLang] || ingredient.name.en) : 'Неизвестный';
-      const display = variant.measure === 'percent'
-        ? `${ing.percent}%`
-        : `${ing.amount} (${ing.percent}%)`;
-      return `<li>${name}: ${display}</li>`;
-    }).join('');
-
-    const warningHTML = (!data.isPercentTotalOk && data.scaledTo100)
-      ? `
-        <div id="percent-warning" class="warning-box">
-          <p>Сумма: ${data.currentSum}% (отличается от 100%). Пересчитать?</p>
-          <button id="recalculate-btn" class="add-button">Пересчитать до 100%</button>
-          <button id="keep-as-is-btn" class="add-button">Не пересчитывать</button>
-        </div>
-      `
-      : '';
-
-    // Строим колесо
-    const wheelSVG = buildWheelSVG(noteContributions);
-
-    container.innerHTML = `
-      <div class="infographic-container">
-        <div class="infographic-section wheel-section">
-          <h4>Колесо ароматов</h4>
-          <div class="wheel-container">
-            ${wheelSVG}
-            <ul class="wheel-legend">
-              ${NOTE_CATEGORIES.filter(cat => noteContributions[cat.id] > 0).map(cat => `
-                <li><span class="legend-color" style="background-color:${cat.color}"></span> ${cat.label} (${Math.round(noteContributions[cat.id] * 10) / 10})</li>
-              `).join('')}
-            </ul>
+      const warningHTML = (!data.isPercentTotalOk && data.scaledTo100)
+        ? `
+          <div id="percent-warning" class="warning-box">
+            <p>Сумма: ${data.currentSum}% (отличается от 100%). Пересчитать?</p>
+            <button id="recalculate-btn" class="add-button">Пересчитать до 100%</button>
+            <button id="keep-as-is-btn" class="add-button">Не пересчитывать</button>
           </div>
-        </div>
+        `
+        : '';
 
-        <div class="infographic-section pyramid-section">
-          <h4>Пирамида аромата</h4>
-          <div class="pyramid-placeholder">Скоро здесь будет пирамида</div>
-        </div>
-
-        <div class="infographic-section reveal-section">
-          <h4>Раскрытие и состав</h4>
-          <div class="reveal-placeholder">Редактирование раскрытия появится здесь</div>
-        </div>
-
-        <div class="infographic-section summary-section">
+      textContainer.innerHTML = `
+        <div class="variant-text-content">
           <h4>Вариант ${variantNumber}</h4>
           <p><strong>Единицы:</strong> ${data.measure}</p>
           ${data.measure !== 'percent' ? `<p><strong>Общий объём:</strong> ${data.totalAmount}</p>` : ''}
@@ -189,33 +194,68 @@ async function renderVariantInfographic(variant, formula) {
           <ul>${ingredientsList}</ul>
           ${warningHTML}
         </div>
+      `;
+
+      if (!data.isPercentTotalOk && data.scaledTo100) {
+        document.getElementById('recalculate-btn')?.addEventListener('click', async () => {
+          variant.ingredients = data.scaledTo100.map(ing => ({
+            ingredientId: ing.ingredientId,
+            amount: ing.amount
+          }));
+          variant.measure = 'percent';
+          variant.totalAmount = 100;
+
+          updateVariant(formula.id, variant.variantId, variant, () => {
+            renderVariantInfographic(variant, formula, textContainer, canvasContainer, includeControls);
+          });
+        });
+
+        document.getElementById('keep-as-is-btn')?.addEventListener('click', () => {
+          const warning = document.getElementById('percent-warning');
+          if (warning) warning.style.display = 'none';
+        });
+      }
+    }
+
+    // Колесо ароматов
+    const noteContributions = calculateVariantNoteContributions(data.ingredients);
+    const wheelSVG = buildWheelSVG(noteContributions);
+
+    canvasContainer.innerHTML = `
+      <div class="infographic-container">
+        <div class="infographic-section wheel-section">
+          <h4>Колесо ароматов</h4>
+          <div class="wheel-wrapper">
+            ${wheelSVG}
+            <div class="wheel-legend">
+              ${noteContributions.filter(c => c.contribution > 0).map(c => `
+                <div class="legend-item">
+                  <span class="legend-color" style="background-color: ${c.color};"></span>
+                  <span>${c.label} — ${c.contribution.toFixed(1)}%</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        ${includeControls ? `
+        <div class="infographic-section reveal-section">
+          <h4>Раскрытие</h4>
+          <div class="reveal-controls">
+            <label><input type="radio" name="reveal-type" value="skin" checked> На коже</label>
+            <label><input type="radio" name="reveal-type" value="blotter"> На блоттере</label>
+          </div>
+          <div class="reveal-editor">
+            <p>Редактирование раскрытия появится здесь</p>
+          </div>
+        </div>
+        ` : ''}
       </div>
     `;
 
-    // Обработчики кнопок (пересчёт до 100%)
-    if (!data.isPercentTotalOk && data.scaledTo100) {
-      document.getElementById('recalculate-btn')?.addEventListener('click', async () => {
-        variant.ingredients = data.scaledTo100.map(ing => ({
-          ingredientId: ing.ingredientId,
-          amount: ing.amount
-        }));
-        variant.measure = 'percent';
-        variant.totalAmount = 100;
-
-        updateVariant(formula.id, variant.variantId, variant, () => {
-          renderVariantInfographic(variant, formula);
-        });
-      });
-
-      document.getElementById('keep-as-is-btn')?.addEventListener('click', () => {
-        const warning = document.getElementById('percent-warning');
-        if (warning) warning.style.display = 'none';
-      });
-    }
-
   } catch (error) {
     console.error('Ошибка при получении расчётов:', error);
-    container.innerHTML = `
+    canvasContainer.innerHTML = `
       <div class="infographic-error">
         <p>Не удалось загрузить расчёты. Убедитесь, что сервер запущен.</p>
         <p class="error-details">${error.message}</p>
@@ -223,5 +263,3 @@ async function renderVariantInfographic(variant, formula) {
     `;
   }
 }
-
-export { renderVariantInfographic };
