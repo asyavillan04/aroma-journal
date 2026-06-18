@@ -1,17 +1,103 @@
 import { getIngredients } from '../data/list-ingredients.js';
 import { updateVariant } from '../data/list-formulas.js';
 
-// Шаблон SVG для колеса ароматов (заглушка)
-const wheelPlaceholder = `
-<div class="infographic-section wheel-section">
-  <h4>Колесо ароматов</h4>
-  <div class="wheel-placeholder">
-    <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(#eee 0% 20%, #ddd 20% 40%, #eee 40% 60%, #ddd 60% 80%, #eee 80% 100%);margin:0 auto;"></div>
-    <p>Категории ароматов будут отображаться на колесе</p>
-  </div>
-</div>
-`;
+// Список категорий нот (можно импортировать из data, если вынесен отдельно)
+const NOTE_CATEGORIES = [
+  { id: 'citrus', label: 'Цитрусовые', color: '#FFD700' },
+  { id: 'floral', label: 'Цветочные', color: '#FF69B4' },
+  { id: 'woody', label: 'Древесные', color: '#8B4513' },
+  { id: 'mineral', label: 'Минеральные', color: '#A9A9A9' },
+  { id: 'musky', label: 'Мускусные', color: '#D2B48C' },
+  { id: 'spicy', label: 'Пряные', color: '#FF4500' },
+  { id: 'fruity', label: 'Фруктовые', color: '#FFA500' },
+  { id: 'green', label: 'Зелёные', color: '#228B22' },
+  { id: 'balsamic', label: 'Бальзамические', color: '#8B0000' },
+  { id: 'animalic', label: 'Животные', color: '#4B0082' },
+  { id: 'aquatic', label: 'Акватические', color: '#00CED1' },
+  { id: 'gourmand', label: 'Гурманские', color: '#D2691E' },
+  { id: 'amber', label: 'Амбровые', color: '#FFBF00' },
+  { id: 'leather', label: 'Кожаные', color: '#3B2F2F' },
+  { id: 'smoky', label: 'Дымные', color: '#708090' },
+  { id: 'abstract', label: 'Абстрактные', color: '#C0C0C0' }
+];
 
+/**
+ * Строит SVG-строку для колеса ароматов на основе карты вкладов нот.
+ * @param {Object} contributions - объект { categoryId: суммарнаяИнтенсивность }
+ * @returns {string} SVG-разметка
+ */
+function buildWheelSVG(contributions) {
+  const total = Object.values(contributions).reduce((sum, val) => sum + val, 0);
+  if (total === 0) {
+    // Если нет нот – рисуем пустое колесо
+    return `
+      <svg viewBox="0 0 200 200" width="200" height="200">
+        <circle cx="100" cy="100" r="95" fill="none" stroke="#ccc" stroke-width="2"/>
+        <circle cx="100" cy="100" r="70" fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="4 2"/>
+        <circle cx="100" cy="100" r="40" fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="4 2"/>
+        <text x="100" y="105" text-anchor="middle" fill="#999" font-size="12">Нет данных</text>
+      </svg>
+    `;
+  }
+
+  const radius = 95;
+  const cx = 100, cy = 100;
+  let currentAngle = -90; // начинаем сверху
+  let paths = '';
+
+  for (const cat of NOTE_CATEGORIES) {
+    const value = contributions[cat.id] || 0;
+    if (value === 0) continue;
+    const sliceAngle = (value / total) * 360;
+    const endAngle = currentAngle + sliceAngle;
+
+    const x1 = cx + radius * Math.cos((currentAngle * Math.PI) / 180);
+    const y1 = cy + radius * Math.sin((currentAngle * Math.PI) / 180);
+    const x2 = cx + radius * Math.cos((endAngle * Math.PI) / 180);
+    const y2 = cy + radius * Math.sin((endAngle * Math.PI) / 180);
+
+    const largeArc = sliceAngle > 180 ? 1 : 0;
+    const path = `M${cx},${cy} L${x1},${y1} A${radius},${radius} 0 ${largeArc} 1 ${x2},${y2} Z`;
+    paths += `<path d="${path}" fill="${cat.color}" stroke="#fff" stroke-width="1"/>`;
+    currentAngle = endAngle;
+  }
+
+  return `
+    <svg viewBox="0 0 200 200" width="200" height="200">
+      ${paths}
+      <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#fff" stroke-width="2"/>
+    </svg>
+  `;
+}
+
+/**
+ * Рассчитывает суммарный вклад нот для варианта на основе его ингредиентов и их процентов.
+ * @param {Array} ingredientsWithPercents - массив объектов { ingredientId, percent }
+ * @returns {Object} { categoryId: суммарнаяИнтенсивность }
+ */
+function calculateVariantNoteContributions(ingredientsWithPercents) {
+  const allIngredients = getIngredients();
+  const contributions = {};
+  NOTE_CATEGORIES.forEach(cat => contributions[cat.id] = 0);
+
+  ingredientsWithPercents.forEach(({ ingredientId, percent }) => {
+    const ingredient = allIngredients.find(ing => ing.id === ingredientId);
+    if (!ingredient || !ingredient.notesProfile) return;
+
+    Object.entries(ingredient.notesProfile).forEach(([catId, intensity]) => {
+      if (contributions.hasOwnProperty(catId)) {
+        // intensity — число от 0 до 10 (или другое), умножаем на долю в формуле
+        contributions[catId] += (intensity * percent) / 100;
+      }
+    });
+  });
+
+  return contributions;
+}
+
+// =============================================
+// ГЛАВНАЯ ФУНКЦИЯ – замени ею старую
+// =============================================
 async function renderVariantInfographic(variant, formula) {
   const container = document.getElementById('variant-infographic');
   if (!container) return;
@@ -45,7 +131,10 @@ async function renderVariantInfographic(variant, formula) {
 
     const data = await response.json();
 
-    // 2. Формируем список ингредиентов с процентами
+    // 2. Рассчитываем вклад нот
+    const noteContributions = calculateVariantNoteContributions(data.ingredients);
+
+    // 3. Формируем HTML
     const ingredientsList = data.ingredients.map(ing => {
       const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
       const name = ingredient ? (ingredient.name[currentLang] || ingredient.name.en) : 'Неизвестный';
@@ -55,7 +144,6 @@ async function renderVariantInfographic(variant, formula) {
       return `<li>${name}: ${display}</li>`;
     }).join('');
 
-    // 3. Предупреждение, если сумма процентов не равна 100
     const warningHTML = (!data.isPercentTotalOk && data.scaledTo100)
       ? `
         <div id="percent-warning" class="warning-box">
@@ -66,39 +154,33 @@ async function renderVariantInfographic(variant, formula) {
       `
       : '';
 
-    // 4. Собираем финальный HTML
+    // Строим колесо
+    const wheelSVG = buildWheelSVG(noteContributions);
+
     container.innerHTML = `
       <div class="infographic-container">
-        <!-- Секция пирамиды (заглушка) -->
-        <div class="infographic-section pyramid-section">
-          <h4>Пирамида аромата</h4>
-          <div class="pyramid-placeholder">
-            <p>Верхние ноты, ноты сердца, базовые ноты появятся здесь</p>
-          </div>
-        </div>
-
-        <!-- Секция колеса ароматов (заглушка) -->
         <div class="infographic-section wheel-section">
           <h4>Колесо ароматов</h4>
-          <div class="wheel-placeholder">
-            ${wheelPlaceholder}
-            <p>Категории ароматов будут отображаться на колесе</p>
+          <div class="wheel-container">
+            ${wheelSVG}
+            <ul class="wheel-legend">
+              ${NOTE_CATEGORIES.filter(cat => noteContributions[cat.id] > 0).map(cat => `
+                <li><span class="legend-color" style="background-color:${cat.color}"></span> ${cat.label} (${Math.round(noteContributions[cat.id] * 10) / 10})</li>
+              `).join('')}
+            </ul>
           </div>
         </div>
 
-        <!-- Секция раскрытия и сводки -->
+        <div class="infographic-section pyramid-section">
+          <h4>Пирамида аромата</h4>
+          <div class="pyramid-placeholder">Скоро здесь будет пирамида</div>
+        </div>
+
         <div class="infographic-section reveal-section">
           <h4>Раскрытие и состав</h4>
-          <div class="reveal-controls">
-            <label><input type="radio" name="reveal-type" value="skin" checked> На коже</label>
-            <label><input type="radio" name="reveal-type" value="blotter"> На блоттере</label>
-          </div>
-          <div class="reveal-editor">
-            <p>Редактирование раскрытия появится здесь</p>
-          </div>
+          <div class="reveal-placeholder">Редактирование раскрытия появится здесь</div>
         </div>
 
-        <!-- Сводка по ингредиентам -->
         <div class="infographic-section summary-section">
           <h4>Вариант ${variantNumber}</h4>
           <p><strong>Единицы:</strong> ${data.measure}</p>
@@ -110,7 +192,7 @@ async function renderVariantInfographic(variant, formula) {
       </div>
     `;
 
-    // 5. Обработчики кнопок (пересчёт до 100%)
+    // Обработчики кнопок (пересчёт до 100%)
     if (!data.isPercentTotalOk && data.scaledTo100) {
       document.getElementById('recalculate-btn')?.addEventListener('click', async () => {
         variant.ingredients = data.scaledTo100.map(ing => ({
