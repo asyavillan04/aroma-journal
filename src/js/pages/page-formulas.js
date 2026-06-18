@@ -183,9 +183,8 @@ export function renderFormulas(container) {
   const openBuilderBtn = document.getElementById('open-builder-btn');
   if (openBuilderBtn) {
     openBuilderBtn.addEventListener('click', () => {
-      const newName = { en: 'New Formula', ru: 'Новая формула', es: 'Nueva fórmula' };
-      const newFormula = addFormula(newName);
-      const firstVariantId = newFormula.variants[0].variantId; // Берем ID первого варианта
+      const newFormula = addFormula({ en: 'New Formula', ru: 'Новая формула', es: 'Nueva fórmula' });
+      const firstVariantId = newFormula.variants[0].variantId;
 
       renderVariantForm(aside, newFormula, firstVariantId, null, {
         isNewFormula: true,
@@ -193,11 +192,13 @@ export function renderFormulas(container) {
           aside.innerHTML = '<div class="aside-placeholder">Выберите формулу или вариант</div>';
         },
         onSaveFormula: (newFormulaName, ingredients, notes, measure, totalAmount) => {
-          if (newFormulaName) {
-            newFormula.name = { en: newFormulaName, ru: newFormulaName, es: newFormulaName };
-          }
-          // Обновляем существующий первый вариант
+          // Обновляем название
           const updatedFormula = updateVariant(newFormula.id, firstVariantId, {
+            name: {
+              en: newFormulaName || 'New Formula',
+              ru: newFormulaName || 'Новая формула',
+              es: newFormulaName || 'Nueva fórmula'
+            },
             ingredients: ingredients,
             notes: notes,
             measure: measure,

@@ -62,6 +62,12 @@ export function updateVariant(formulaId, variantId, newData, callback) {
     
     if (!formula) return null;
     
+    // Если передано имя – обновляем название формулы
+    if (newData.name !== undefined) {
+        formula.name = newData.name;
+        delete newData.name; 
+    }
+    
     const variantIndex = formula.variants.findIndex(v => v.variantId === variantId);
     
     if (variantIndex !== -1) {
@@ -82,6 +88,7 @@ export function updateVariant(formulaId, variantId, newData, callback) {
     if (callback) callback(formula);
     return formula;
 }
+
 
 export function deleteVariant(formulaId, variantId) {
     let formulas = loadFormulas();

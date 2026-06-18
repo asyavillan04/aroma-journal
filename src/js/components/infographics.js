@@ -65,9 +65,9 @@ function buildWheelSVG(noteContributions) {
 
   if (total === 0) {
     return `<svg viewBox="0 0 200 200" width="200" height="200">
-      <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS}" fill="none" stroke="var(--color-backround)" stroke-width="2"/>
-      <circle cx="${CENTER}" cy="${CENTER}" r="${INNER_RADIUS}" fill="none" stroke="var(--color-backround)" stroke-width="2"/>
-      <text x="${CENTER}" y="${CENTER}" text-anchor="middle" dy=".3em" fill="var(--color-backround)" font-size="12">Нет данных</text>
+      <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS}" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"/>
+      <circle cx="${CENTER}" cy="${CENTER}" r="${INNER_RADIUS}" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"/>
+      <text x="${CENTER}" y="${CENTER}" text-anchor="middle" dy=".3em" fill="var(--color-text-secondary)" font-size="12">Нет данных</text>
     </svg>`;
   }
 
@@ -102,9 +102,10 @@ function buildWheelSVG(noteContributions) {
       'Z'
     ].join(' ');
 
+    // Анимация: opacity от 0 до 0.85, поворот от -90° до 0° (веер)
     const delay = index * 0.15;
     sectors += `
-      <path d="${path}" fill="${cat.color}" opacity="0.85" stroke="#fff" stroke-width="1"
+      <path d="${path}" fill="${cat.color}" opacity="0" stroke="#fff" stroke-width="1"
             style="transform-origin: ${CENTER}px ${CENTER}px; animation: sectorReveal 0.6s ease-out forwards; animation-delay: ${delay}s;">
         <title>${cat.label} — ${cat.contribution.toFixed(1)}%</title>
       </path>`;
@@ -112,20 +113,25 @@ function buildWheelSVG(noteContributions) {
     currentAngle = endAngle;
   });
 
+  // Уникальное имя анимации для каждого рендера (чтобы перезапускалась)
+  const animName = `sectorReveal${Date.now()}`;
   const cssAnimation = `
-    @keyframes sectorReveal {
+    @keyframes ${animName} {
       0% { opacity: 0; transform: rotate(-90deg); }
       100% { opacity: 0.85; transform: rotate(0deg); }
     }
   `;
 
-  return `
+  // Заменяем стандартное имя на уникальное
+  const result = `
     <svg viewBox="0 0 200 200" width="200" height="200">
       <style>${cssAnimation}</style>
-      ${sectors}
+      ${sectors.replace(/sectorReveal/g, animName)}
       <circle cx="${CENTER}" cy="${CENTER}" r="${INNER_RADIUS}" fill="var(--color-bg, white)" stroke="var(--color-text-secondary)" stroke-width="1"/>
       <text x="${CENTER}" y="${CENTER}" text-anchor="middle" dy=".3em" fill="var(--color-text-secondary)" font-size="10">Колесо</text>
     </svg>`;
+
+  return result;
 }
 
 /**
