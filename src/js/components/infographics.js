@@ -1,7 +1,7 @@
 import { getIngredients } from '../data/list-ingredients.js';
 import { updateVariant } from '../data/list-formulas.js';
 
-// Список категорий нот (можно импортировать из data, если вынесен отдельно)
+// Список категорий нот
 const NOTE_CATEGORIES = [
   { id: 'citrus', label: 'Цитрусовые', color: '#FFD700' },
   { id: 'floral', label: 'Цветочные', color: '#FF69B4' },
@@ -73,7 +73,7 @@ function buildWheelSVG(contributions) {
 /**
  * Рассчитывает суммарный вклад нот для варианта на основе его ингредиентов и их процентов.
  * @param {Array} ingredientsWithPercents - массив объектов { ingredientId, percent }
- * @returns {Object} { categoryId: суммарнаяИнтенсивность }
+ * @returns {Object} { categoryId: суммарная Интенсивность }
  */
 function calculateVariantNoteContributions(ingredientsWithPercents) {
   const allIngredients = getIngredients();
@@ -96,7 +96,7 @@ function calculateVariantNoteContributions(ingredientsWithPercents) {
 }
 
 // =============================================
-// ГЛАВНАЯ ФУНКЦИЯ – замени ею старую
+// ГЛАВНАЯ ФУНКЦИЯ 
 // =============================================
 async function renderVariantInfographic(variant, formula) {
   const container = document.getElementById('variant-infographic');
