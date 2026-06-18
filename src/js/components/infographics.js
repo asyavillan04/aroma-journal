@@ -1,7 +1,7 @@
 import { getIngredients } from '../data/list-ingredients.js';
 import { updateVariant } from '../data/list-formulas.js';
 
-// Категории нот с цветами (те, что вы обновили)
+// Категории нот с цветами
 const NOTE_CATEGORIES = [
   { id: 'citrus', label: 'Цитрусовые', color: '#FFD700' },
   { id: 'floral', label: 'Цветочные', color: '#e996bf' },
@@ -21,11 +21,6 @@ const NOTE_CATEGORIES = [
   { id: 'abstract', label: 'Абстрактные', color: '#d3cce0' }
 ];
 
-/**
- * Рассчитывает суммарный вклад каждой категории нот в варианте.
- * @param {Array} ingredients - массив ингредиентов варианта с процентами
- * @returns {Array} массив объектов { category, label, color, contribution }
- */
 function calculateVariantNoteContributions(ingredients) {
   const allIngredients = getIngredients();
   const contributions = {};
@@ -52,11 +47,6 @@ function calculateVariantNoteContributions(ingredients) {
   }));
 }
 
-/**
- * Строит SVG колеса ароматов
- * @param {Array} noteContributions - результат calculateVariantNoteContributions
- * @returns {string} строка SVG
- */
 function buildWheelSVG(noteContributions) {
   const RADIUS = 90;
   const INNER_RADIUS = 40;
@@ -102,18 +92,16 @@ function buildWheelSVG(noteContributions) {
       'Z'
     ].join(' ');
 
-    // Анимация: opacity от 0 до 0.85, поворот от -90° до 0° (веер)
     const delay = index * 0.15;
     sectors += `
       <path d="${path}" fill="${cat.color}" opacity="0" stroke="#fff" stroke-width="1"
-            style="transform-origin: ${CENTER}px ${CENTER}px; animation: sectorReveal 0.6s ease-out forwards; animation-delay: ${delay}s;">
-        <title>${cat.label} — ${cat.contribution.toFixed(1)}%</title>
+            style="transform-origin: ${CENTER}px ${CENTER}px; animation: sectorReveal 0.6s ease-out forwards; animation-delay: ${delay}s;"
+            data-label="${cat.label} — ${cat.contribution.toFixed(1)}%">
       </path>`;
 
     currentAngle = endAngle;
   });
 
-  // Уникальное имя анимации для каждого рендера (чтобы перезапускалась)
   const animName = `sectorReveal${Date.now()}`;
   const cssAnimation = `
     @keyframes ${animName} {
@@ -122,26 +110,15 @@ function buildWheelSVG(noteContributions) {
     }
   `;
 
-  // Заменяем стандартное имя на уникальное
-  const result = `
+  return `
     <svg viewBox="0 0 200 200" width="200" height="200">
       <style>${cssAnimation}</style>
       ${sectors.replace(/sectorReveal/g, animName)}
       <circle cx="${CENTER}" cy="${CENTER}" r="${INNER_RADIUS}" fill="var(--color-bg, white)" stroke="var(--color-text-secondary)" stroke-width="1"/>
       <text x="${CENTER}" y="${CENTER}" text-anchor="middle" dy=".3em" fill="var(--color-text-secondary)" font-size="10">Колесо</text>
     </svg>`;
-
-  return result;
 }
 
-/**
- * Отображает инфографику варианта в aside.
- * @param {Object} variant - объект варианта
- * @param {Object} formula - объект формулы
- * @param {HTMLElement} textContainer - контейнер для текстовой инфо
- * @param {HTMLElement} canvasContainer - контейнер для колеса
- * @param {boolean} includeControls - показывать ли переключатель раскрытия
- */
 export async function renderVariantInfographic(variant, formula, textContainer, canvasContainer, includeControls = false) {
   if (!canvasContainer) return;
 
@@ -170,7 +147,7 @@ export async function renderVariantInfographic(variant, formula, textContainer, 
 
     const data = await response.json();
 
-    // Текстовая информация (информация о варианте)
+    // Текстовая информация (перенесена под инфографику)
     if (textContainer) {
       const ingredientsList = data.ingredients.map(ing => {
         const ingredient = getIngredients().find(i => i.id === ing.ingredientId);
@@ -231,33 +208,65 @@ export async function renderVariantInfographic(variant, formula, textContainer, 
       <div class="infographic-container">
         <div class="infographic-section wheel-section">
           <h4>Колесо ароматов</h4>
-          <div class="wheel-wrapper">
+          <div class="wheel-wrapper" style="position: relative;">
             ${wheelSVG}
-            <div class="wheel-legend">
-              ${noteContributions.filter(c => c.contribution > 0).map(c => `
-                <div class="legend-item">
-                  <span class="legend-color" style="background-color: ${c.color};"></span>
-                  <span>${c.label} — ${c.contribution.toFixed(1)}%</span>
-                </div>
-              `).join('')}
-            </div>
+            <div id="wheel-tooltip" style="display: none; position: absolute; background: rgba(0,0,0,0.75); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; pointer-events: none; white-space: nowrap;"></div>
           </div>
         </div>
 
         ${includeControls ? `
         <div class="infographic-section reveal-section">
-          <h4>Раскрытие</h4>
+          <h4>Развитие аромата</h4>
           <div class="reveal-controls">
             <label><input type="radio" name="reveal-type" value="skin" checked> На коже</label>
             <label><input type="radio" name="reveal-type" value="blotter"> На блоттере</label>
           </div>
           <div class="reveal-editor">
-            <p>Редактирование раскрытия появится здесь</p>
+            <p>Редактирование развития аромата появится здесь</p>
           </div>
         </div>
         ` : ''}
       </div>
     `;
+
+    // Интерактивность колеса: показываем тултип при наведении/касании
+    const wheelWrapper = canvasContainer.querySelector('.wheel-wrapper');
+    const tooltip = wheelWrapper?.querySelector('#wheel-tooltip');
+    const svg = wheelWrapper?.querySelector('svg');
+
+    if (svg && tooltip) {
+      const paths = svg.querySelectorAll('path[data-label]');
+      
+      const showTooltip = (e, label) => {
+        const rect = wheelWrapper.getBoundingClientRect();
+        tooltip.textContent = label;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX - rect.left + 10) + 'px';
+        tooltip.style.top = (e.clientY - rect.top - 30) + 'px';
+      };
+
+      const hideTooltip = () => {
+        tooltip.style.display = 'none';
+      };
+
+      paths.forEach(path => {
+        path.addEventListener('mouseenter', (e) => {
+          showTooltip(e, path.dataset.label);
+        });
+        path.addEventListener('mousemove', (e) => {
+          showTooltip(e, path.dataset.label);
+        });
+        path.addEventListener('mouseleave', hideTooltip);
+        // Для сенсорных устройств
+        path.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          showTooltip(e.touches[0], path.dataset.label);
+        }, { passive: false });
+        path.addEventListener('touchend', hideTooltip);
+      });
+
+      svg.addEventListener('mouseleave', hideTooltip);
+    }
 
   } catch (error) {
     console.error('Ошибка при получении расчётов:', error);

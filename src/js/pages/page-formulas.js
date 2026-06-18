@@ -102,14 +102,14 @@ function showVariantDetails(formula, variant, aside) {
         <h3>${formulaName} — Вариант ${variantNumber}</h3>
       </div>
       <div class="element-content variant-content">
-        <div class="variant-text"></div>
         <div id="variant-infographic"></div>
+        <div class="variant-text"></div>
       </div>
     </div>
   `;
 
-  const textContainer = variantDetailsDiv.querySelector('.variant-text');
   const canvasContainer = variantDetailsDiv.querySelector('#variant-infographic');
+  const textContainer = variantDetailsDiv.querySelector('.variant-text');
   renderVariantInfographic(variant, formula, textContainer, canvasContainer, true);
 
   const backBtn = variantDetailsDiv.querySelector('.back-to-variants-button');
@@ -117,7 +117,6 @@ function showVariantDetails(formula, variant, aside) {
     variantsListDiv.style.display = 'block';
     variantDetailsDiv.style.display = 'none';
     variantDetailsDiv.innerHTML = '';
-    // На мобильных панель остаётся открытой (показывает список вариантов)
   });
 }
 
