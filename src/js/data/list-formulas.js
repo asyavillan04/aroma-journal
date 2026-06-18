@@ -5,12 +5,10 @@ function loadFormulas() {
     if (raw) {
         try {
             const formulas = JSON.parse(raw);
-            // Миграция: добавляем measure и totalAmount старым вариантам
             formulas.forEach(formula => {
                 formula.variants.forEach(variant => {
                     if (!variant.measure) variant.measure = 'percent';
                     if (variant.totalAmount === undefined) variant.totalAmount = 100;
-                    // amount у ингредиентов
                     variant.ingredients.forEach(ing => {
                         if (ing.percent !== undefined && ing.amount === undefined) {
                             ing.amount = ing.percent;
@@ -41,8 +39,8 @@ export function addFormula(nameObject) {
         variantId: crypto?.randomUUID?.() ?? Date.now().toString(),
         created: new Date().toISOString(),
         status: 'draft',
-        measure: 'percent',           // ← добавлено
-        totalAmount: 100,             // ← добавлено
+        measure: 'percent',
+        totalAmount: 100,
         ingredients: [],
         notes: ''
     };
@@ -52,12 +50,13 @@ export function addFormula(nameObject) {
         name: nameObject,
         variants: [firstVariant]
     };
+
     formulas.push(newFormula);
     saveFormulas(formulas);
     return newFormula;
 }
 
-export function updateVariant(formulaId, variantId, newData) {
+export function updateVariant(formulaId, variantId, newData, callback) {
     const formulas = loadFormulas();
     const formula = formulas.find(f => f.id === formulaId);
     
@@ -72,14 +71,15 @@ export function updateVariant(formulaId, variantId, newData) {
             variantId: crypto?.randomUUID?.() ?? Date.now().toString(),
             created: new Date().toISOString(),
             status: 'draft',
-            measure: 'percent',        // ← добавлено
-            totalAmount: 100,          // ← добавлено
+            measure: 'percent',
+            totalAmount: 100,
             ...newData
         };
         formula.variants.push(newVariant);
     }
     
     saveFormulas(formulas);
+    if (callback) callback(formula);
     return formula;
 }
 

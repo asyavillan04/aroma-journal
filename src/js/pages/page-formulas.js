@@ -179,15 +179,39 @@ export function renderFormulas(container) {
   // Инициализация кнопки закрытия для aside (делаем один раз)
   initMobileAside();
 
-  // Кнопка "Новая формула"
+  // Кнопка Новая формула
   const openBuilderBtn = document.getElementById('open-builder-btn');
   if (openBuilderBtn) {
     openBuilderBtn.addEventListener('click', () => {
-      renderFormulaFormInAside((newFormula) => {
-        renderVariantsInAside(newFormula);
+      const newName = { en: 'New Formula', ru: 'Новая формула', es: 'Nueva fórmula' };
+      const newFormula = addFormula(newName);
+      const firstVariantId = newFormula.variants[0].variantId; // Берем ID первого варианта
+
+      renderVariantForm(aside, newFormula, firstVariantId, null, {
+        isNewFormula: true,
+        returnToPrevious: () => {
+          aside.innerHTML = '<div class="aside-placeholder">Выберите формулу или вариант</div>';
+        },
+        onSaveFormula: (newFormulaName, ingredients, notes, measure, totalAmount) => {
+          if (newFormulaName) {
+            newFormula.name = { en: newFormulaName, ru: newFormulaName, es: newFormulaName };
+          }
+          // Обновляем существующий первый вариант
+          const updatedFormula = updateVariant(newFormula.id, firstVariantId, {
+            ingredients: ingredients,
+            notes: notes,
+            measure: measure,
+            totalAmount: totalAmount
+          });
+          if (updatedFormula) {
+            renderFormulas(container);
+            renderVariantsInAside(updatedFormula);
+          }
+        }
       });
     });
   }
+
 
   // Показать варианты формулы
   document.querySelectorAll('.formula-view-button[data-id]').forEach(btn => {
