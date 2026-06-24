@@ -23,7 +23,8 @@ const NOTE_CATEGORIES = [
 
 function calculateVariantNoteContributions(ingredients) {
   const allIngredients = getIngredients();
-  const contributions = {};
+  // Суммируем сырые вклады каждой ноты
+  const rawContributions = {};
 
   ingredients.forEach(ing => {
     const ingredient = allIngredients.find(i => i.id === ing.ingredientId);
@@ -32,18 +33,27 @@ function calculateVariantNoteContributions(ingredients) {
     const totalIntensity = Object.values(ingredient.notesProfile).reduce((sum, val) => sum + val, 0);
     if (totalIntensity === 0) return;
 
+    // Вес ингредиента в формуле: для процентов — ing.percent, для других мер — доля от totalAmount
+    const weight = ing.percent / 100; // ing.percent уже число от 0 до 100
+
     Object.entries(ingredient.notesProfile).forEach(([category, intensity]) => {
       if (intensity > 0) {
         const normalizedIntensity = intensity / totalIntensity;
-        const contribution = (normalizedIntensity * ing.percent) / 100;
-        contributions[category] = (contributions[category] || 0) + contribution;
+        const contribution = normalizedIntensity * weight;
+        rawContributions[category] = (rawContributions[category] || 0) + contribution;
       }
     });
   });
 
+  // Нормализуем, чтобы сумма была 1
+  const total = Object.values(rawContributions).reduce((sum, val) => sum + val, 0);
+  if (total === 0) {
+    return NOTE_CATEGORIES.map(cat => ({ ...cat, contribution: 0 }));
+  }
+
   return NOTE_CATEGORIES.map(cat => ({
     ...cat,
-    contribution: contributions[cat.id] || 0
+    contribution: ((rawContributions[cat.id] || 0) / total) * 100
   }));
 }
 

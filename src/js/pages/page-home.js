@@ -1,3 +1,18 @@
+import { getIngredients } from '../data/list-ingredients.js';
+
+function getLowStockIngredients() {
+  const ingredients = getIngredients();
+  const lowStock = ingredients.filter(ing => ing.quantity <= ing.minStock);
+  if (lowStock.length === 0) {
+    return '<p>Нет ингредиентов, которые заканчиваются</p>';
+  }
+  return `
+    <ul>
+      ${lowStock.map(ing => `<li>${ing.name.ru || ing.name.en}: ${ing.quantity} / ${ing.minStock} мл</li>`).join('')}
+    </ul>
+  `;
+}
+
 export function renderHome(container) {
   const introShown = sessionStorage.getItem('aj-intro-shown');
 
@@ -6,19 +21,26 @@ export function renderHome(container) {
       <h2 class="typing-title"> </h2>
       <div class="typing-line"></div>
       <p class="subtitle-hidden">Ваш личный органайзер парфюмерии.</p>
+
       <div class="home-content journal-content">
+
         <section class="element home-element maturated-soon card-item--left">
           <h3>Созревания:</h3>
           <div class="element-content">Нет ближайших созреваний</div>
         </section>
+
         <section class="element home-element ingredients-run-out card-item--left">
           <h3>Заканчивается:</h3>
-          <div class="element-content">Нет ингредиентов, которые заканчиваются</div>
+          <div class="element-content" id="low-stock-list">
+            ${getLowStockIngredients()}
+          </div>
         </section>
+
         <section class="element home-element ingridients-palette card-item--left">
           <h3>Парфюмерная палитра:</h3>
           <div class="element-content">Пусто</div>
         </section>
+
       </div>
     </div>
   `;

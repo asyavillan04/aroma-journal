@@ -82,7 +82,7 @@ input[type="reset"] {
   -moz-appearance: none;
 
   border: none;
-  outline: 1px solid var(--color-header);
+  outline: none;
   box-shadow: none;
   border-radius: var(--border-radius);
 
@@ -97,6 +97,7 @@ input[type="reset"] {
 
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: 0.3s ease;
 }
 
 button:hover,
@@ -114,7 +115,7 @@ button:focus-visible {
     background: transparent;   /* фон дорожки прозрачный */
 }
 
-/* Бегунок (ползунок) */
+/* Ползунок */
 ::-webkit-scrollbar-thumb {
     background: var(--color-accent-1);
     border-radius: 8px;

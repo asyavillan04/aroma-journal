@@ -32,7 +32,8 @@ const defaultIngredients = [
     botanicalName: 'Citrus bergamia',
     type: 'essential-oil',
     origin: 'Италия',
-    quantity: 0,
+    quantity: 50,
+    minStock: 5,               // ← новый порог
     shelfLife: '2025-12-01',
     aromaProfile: 'Цитрусовый, свежий, сладковатый',
     comments: 'Партия от проверенного поставщика',
@@ -44,7 +45,8 @@ const defaultIngredients = [
     botanicalName: 'Rosa damascena',
     type: 'absolute',
     origin: 'Болгария',
-    quantity: 0,
+    quantity: 5,
+    minStock: 1,               // ← новый порог
     shelfLife: '2026-06-15',
     aromaProfile: 'Глубокий, цветочный, медовый',
     comments: '',
@@ -57,9 +59,9 @@ function loadIngredients() {
   if (raw) {
     try {
       const parsed = JSON.parse(raw);
-      // Для старых данных без notesProfile дефолтный профиль
       return parsed.map(ing => ({
         ...ing,
+        minStock: ing.minStock || 5, // миграция: если нет – 5
         notesProfile: ing.notesProfile || { ...defaultNotesProfile }
       }));
     } catch {
@@ -82,6 +84,7 @@ export function addIngredient(newIngredient) {
   const ingredientWithId = {
     ...newIngredient,
     id: crypto?.randomUUID?.() ?? Date.now().toString(),
+    minStock: newIngredient.minStock || 5, // по умолчанию 5
     notesProfile: newIngredient.notesProfile || { ...defaultNotesProfile }
   };
   ingredients.push(ingredientWithId);
